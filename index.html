@@ -56,7 +56,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 1.5rem;
             padding: 0 0.5rem;
             flex-wrap: wrap;
             gap: 1.5rem;
@@ -85,7 +85,6 @@
             flex-wrap: wrap;
         }
 
-        /* 按鈕樣式 */
         .spotify-login-btn {
             display: inline-flex;
             align-items: center;
@@ -99,6 +98,8 @@
             text-decoration: none;
             transition: all 0.3s ease;
             box-shadow: 0 4px 12px rgba(29, 185, 84, 0.25);
+            cursor: pointer;
+            border: none;
         }
 
         .spotify-login-btn:hover {
@@ -112,25 +113,21 @@
             height: 20px;
         }
 
-        .download-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background-color: var(--btn-bg);
+        /* 提醒提示區塊 */
+        .notice-banner {
+            width: 100%;
+            background-color: rgba(217, 119, 6, 0.1);
+            border: 1px solid rgba(217, 119, 6, 0.3);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 2rem;
             color: var(--accent-gold-light);
-            border: 1px solid var(--accent-gold);
-            padding: 0.65rem 1.2rem;
-            border-radius: 50px;
             font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            line-height: 1.6;
         }
 
-        .download-btn:hover {
-            background-color: var(--accent-gold);
-            color: #000;
-            transform: translateY(-2px);
+        .notice-banner strong {
+            color: var(--accent-gold);
         }
 
         .back-btn {
@@ -186,18 +183,18 @@
 
         /* 桌面/橫式 (3欄模式：789在左、456在中、123在右) */
         @media (min-width: 768px) {
-            .grid-container {
+            .grid-container:not(.detail-mode) {
                 grid-template-columns: repeat(3, 1fr);
             }
-            .grid-card[data-id="7"] { order: 1; }
-            .grid-card[data-id="4"] { order: 2; }
-            .grid-card[data-id="1"] { order: 3; }
-            .grid-card[data-id="8"] { order: 4; }
-            .grid-card[data-id="5"] { order: 5; }
-            .grid-card[data-id="2"] { order: 6; }
-            .grid-card[data-id="9"] { order: 7; }
-            .grid-card[data-id="6"] { order: 8; }
-            .grid-card[data-id="3"] { order: 9; }
+            .grid-container:not(.detail-mode) .grid-card[data-id="7"] { order: 1; }
+            .grid-container:not(.detail-mode) .grid-card[data-id="4"] { order: 2; }
+            .grid-container:not(.detail-mode) .grid-card[data-id="1"] { order: 3; }
+            .grid-container:not(.detail-mode) .grid-card[data-id="8"] { order: 4; }
+            .grid-container:not(.detail-mode) .grid-card[data-id="5"] { order: 5; }
+            .grid-container:not(.detail-mode) .grid-card[data-id="2"] { order: 6; }
+            .grid-container:not(.detail-mode) .grid-card[data-id="9"] { order: 7; }
+            .grid-container:not(.detail-mode) .grid-card[data-id="6"] { order: 8; }
+            .grid-container:not(.detail-mode) .grid-card[data-id="3"] { order: 9; }
         }
 
         /* 手機直式 (單欄模式：1 ~ 9 由上至下) */
@@ -207,18 +204,18 @@
                 align-items: center;
                 text-align: center;
             }
-            .grid-container {
+            .grid-container:not(.detail-mode) {
                 grid-template-columns: 1fr;
             }
-            .grid-card[data-id="1"] { order: 1; }
-            .grid-card[data-id="2"] { order: 2; }
-            .grid-card[data-id="3"] { order: 3; }
-            .grid-card[data-id="4"] { order: 4; }
-            .grid-card[data-id="5"] { order: 5; }
-            .grid-card[data-id="6"] { order: 6; }
-            .grid-card[data-id="7"] { order: 7; }
-            .grid-card[data-id="8"] { order: 8; }
-            .grid-card[data-id="9"] { order: 9; }
+            .grid-container:not(.detail-mode) .grid-card[data-id="1"] { order: 1; }
+            .grid-container:not(.detail-mode) .grid-card[data-id="2"] { order: 2; }
+            .grid-container:not(.detail-mode) .grid-card[data-id="3"] { order: 3; }
+            .grid-container:not(.detail-mode) .grid-card[data-id="4"] { order: 4; }
+            .grid-container:not(.detail-mode) .grid-card[data-id="5"] { order: 5; }
+            .grid-container:not(.detail-mode) .grid-card[data-id="6"] { order: 6; }
+            .grid-container:not(.detail-mode) .grid-card[data-id="7"] { order: 7; }
+            .grid-container:not(.detail-mode) .grid-card[data-id="8"] { order: 8; }
+            .grid-container:not(.detail-mode) .grid-card[data-id="9"] { order: 9; }
         }
 
         /* 卡片樣式 */
@@ -279,9 +276,16 @@
             width: 100%;
             height: 380px;
             background-color: #000;
+            transition: height 0.3s ease;
         }
 
-        /* 宮格放大頁面 */
+        .iframe-container iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 進入頁面控制項 */
         .detail-header-bar {
             width: 100%;
             display: flex;
@@ -310,22 +314,36 @@
             color: var(--text-primary);
         }
 
-        .detail-iframe-wrapper {
-            width: 100%;
-            height: 600px;
-            background-color: #000;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--card-border);
-            margin-bottom: 2rem;
-        }
-
         .bottom-nav {
             width: 100%;
             display: flex;
             justify-content: center;
+            margin-top: 2rem;
             margin-bottom: 2rem;
+        }
+
+        /* 專注/進入模式 (detail-mode) */
+        .grid-container.detail-mode {
+            grid-template-columns: 1fr;
+        }
+
+        .grid-container.detail-mode .grid-card {
+            display: none;
+        }
+
+        .grid-container.detail-mode .grid-card.is-active-detail {
+            display: flex !important;
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        .grid-container.detail-mode .grid-card.is-active-detail .card-header {
+            display: none;
+        }
+
+        .grid-container.detail-mode .grid-card.is-active-detail .iframe-container {
+            height: 600px;
         }
 
         footer {
@@ -342,56 +360,56 @@
 </head>
 <body>
 
-    <!-- 1. 九宮格主頁 -->
     <section id="main-view" class="view-section">
-        <header>
+        <header id="main-header">
             <div class="header-title">
                 <h1>于峻的音樂九宮格</h1>
                 <p>九種情緒語境與音樂氛圍的靈魂對應</p>
             </div>
             <div class="header-actions">
-                <button class="download-btn" onclick="downloadCurrentHTML()">
-                    ⬇ 下載 index.html
+                <button class="spotify-login-btn" onclick="loginSpotify()">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                    </svg>
+                    <span id="login-status-text">登入 Spotify</span>
                 </button>
-                <a href="https://accounts.spotify.com/login" target="_blank" rel="noopener noreferrer" class="spotify-login-btn">
+            </div>
+        </header>
+
+        <!-- 提示說明欄 -->
+        <div class="notice-banner">
+            💡 <strong>完整歌曲播放提示：</strong><br>
+            1. 由於瀏覽器阻擋跨站 Cookie，嵌入播放器在第三方網頁（GitHub Pages）預設會被判斷為未登入。<br>
+            2. 若您為 <strong>Spotify Premium 付費會員</strong>，請直接<strong>親自點擊播放卡片內部的 ▶ 按鈕</strong>解鎖完整播放；或點擊右上角「登入 Spotify」完成授權。
+        </div>
+
+        <!-- 進入頁面頂部控制項 -->
+        <div id="detail-controls-top" class="hidden" style="width: 100%;">
+            <div class="detail-header-bar">
+                <button class="back-btn" onclick="showMainView()">
+                    <span>← 回到九宮格</span>
+                </button>
+
+                <button class="spotify-login-btn" onclick="loginSpotify()">
                     <svg viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
                     </svg>
                     <span>登入 Spotify</span>
-                </a>
+                </button>
             </div>
-        </header>
+
+            <div class="detail-card-info">
+                <h2 class="detail-title" id="detail-title">歌單名稱</h2>
+                <span class="card-number" id="detail-number">GRID 00</span>
+            </div>
+        </div>
 
         <main class="grid-container" id="grid-container">
-            <!-- 由 JS 動態生成九宮格 HTML 結構 -->
+            <!-- JS 動態渲染卡片 -->
         </main>
-    </section>
 
-    <!-- 2. 宮格放大頁面 -->
-    <section id="detail-view" class="view-section hidden">
-        <div class="detail-header-bar">
-            <button class="back-btn" onclick="showMainView()">
-                <span>← 回到九宮格</span>
-            </button>
-
-            <a href="https://accounts.spotify.com/login" target="_blank" rel="noopener noreferrer" class="spotify-login-btn">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-                </svg>
-                <span>登入 Spotify</span>
-            </a>
-        </div>
-
-        <div class="detail-card-info">
-            <h2 class="detail-title" id="detail-title">歌單名稱</h2>
-            <span class="card-number" id="detail-number">GRID 00</span>
-        </div>
-
-        <div class="detail-iframe-wrapper" id="detail-embed-wrapper">
-            <!-- 放大頁面的播放器容器 -->
-        </div>
-
-        <div class="bottom-nav">
+        <!-- 進入頁面底部控制項 -->
+        <div id="detail-controls-bottom" class="bottom-nav hidden">
             <button class="back-btn" onclick="showMainView()">
                 <span>← 回到九宮格</span>
             </button>
@@ -403,6 +421,15 @@
     </footer>
 
     <script>
+        // ==========================================
+        // Spotify Developer 設定（選填）
+        // 若至 https://developer.spotify.com/dashboard 建立 App
+        // 可將 Client ID 貼於下方，開啟官方授權登入
+        // ==========================================
+        const SPOTIFY_CLIENT_ID = ""; // 在此填入 Client ID
+        const REDIRECT_URI = window.location.origin + window.location.pathname;
+        const SCOPES = "streaming user-read-email user-read-private user-modify-playback-state";
+
         const musicGrids = [
             { id: 1, num: "GRID 01", title: "1 - 振奮激昂", playlistId: "5d38UvPsiuwEpHEKsmNVdI" },
             { id: 2, num: "GRID 02", title: "2 - 雄偉莊嚴", playlistId: "2FzUomeuPcmzRF0XrowXLJ" },
@@ -416,19 +443,37 @@
         ];
 
         const controllers = new Map();
-        let spotifyIFrameApiInstance = null;
+
+        // 檢查 Hash 驗證權限 Token
+        function checkAccessToken() {
+            const hash = window.location.hash.substring(1);
+            const params = new URLSearchParams(hash);
+            if (params.has("access_token")) {
+                document.getElementById('login-status-text').innerText = "已連結 Spotify 帳號";
+                history.replaceState(null, "", window.location.pathname);
+            }
+        }
+
+        function loginSpotify() {
+            if (!SPOTIFY_CLIENT_ID) {
+                window.open("https://accounts.spotify.com/login", "_blank");
+                return;
+            }
+            const authUrl = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPES)}`;
+            window.location.href = authUrl;
+        }
 
         function renderMainGrid() {
             const container = document.getElementById('grid-container');
             container.innerHTML = musicGrids.map((item, index) => `
-                <div class="grid-card" data-id="${item.id}">
+                <div class="grid-card" data-id="${item.id}" id="card-node-${item.id}">
                     <div class="card-header">
                         <div class="card-header-left">
                             <span class="card-number">${item.num}</span>
                             <span class="card-title" title="${item.title}">${item.title}</span>
                         </div>
                         <button class="expand-btn" onclick="openDetailView(${index})">
-                            放大 ⤢
+                            進入 ⤢
                         </button>
                     </div>
                     <div class="iframe-container" id="embed-container-${item.id}"></div>
@@ -437,20 +482,26 @@
         }
 
         window.onSpotifyIframeApiReady = (IFrameAPI) => {
-            spotifyIFrameApiInstance = IFrameAPI;
             musicGrids.forEach(item => {
                 const element = document.getElementById(`embed-container-${item.id}`);
                 if (!element) return;
 
                 const options = {
                     width: '100%',
-                    height: '380',
+                    height: '100%',
                     uri: `spotify:playlist:${item.playlistId}`
                 };
 
                 const callback = (EmbedController) => {
                     controllers.set(item.id, EmbedController);
 
+                    // 加上 encrypted-media 與 autoplay 存取授權
+                    const iframe = element.querySelector('iframe');
+                    if (iframe) {
+                        iframe.setAttribute('allow', 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture');
+                    }
+
+                    // 播放互斥，維持音樂切換行為
                     EmbedController.addListener('playback_update', e => {
                         if (e.data && !e.data.isPaused) {
                             controllers.forEach((ctrl, id) => {
@@ -471,52 +522,43 @@
             document.getElementById('detail-title').innerText = item.title;
             document.getElementById('detail-number').innerText = item.num;
 
-            const wrapper = document.getElementById('detail-embed-wrapper');
-            wrapper.innerHTML = `<div id="detail-spotify-embed" style="width:100%; height:100%;"></div>`;
+            document.getElementById('main-header').classList.add('hidden');
+            document.getElementById('detail-controls-top').classList.remove('hidden');
+            document.getElementById('detail-controls-bottom').classList.remove('hidden');
 
-            if (spotifyIFrameApiInstance) {
-                const options = {
-                    width: '100%',
-                    height: '600',
-                    uri: `spotify:playlist:${item.playlistId}`
-                };
-                spotifyIFrameApiInstance.createController(
-                    document.getElementById('detail-spotify-embed'),
-                    options,
-                    (EmbedController) => {
-                        EmbedController.addListener('playback_update', e => {
-                            if (e.data && !e.data.isPaused) {
-                                controllers.forEach(ctrl => ctrl.pause());
-                            }
-                        });
-                    }
-                );
-            }
+            const gridContainer = document.getElementById('grid-container');
+            gridContainer.classList.add('detail-mode');
 
-            document.getElementById('main-view').classList.add('hidden');
-            document.getElementById('detail-view').classList.remove('hidden');
+            musicGrids.forEach(g => {
+                const card = document.getElementById(`card-node-${g.id}`);
+                if (g.id === item.id) {
+                    card.classList.add('is-active-detail');
+                } else {
+                    card.classList.remove('is-active-detail');
+                }
+            });
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function showMainView() {
-            document.getElementById('detail-embed-wrapper').innerHTML = '';
-            document.getElementById('detail-view').classList.add('hidden');
-            document.getElementById('main-view').classList.remove('hidden');
+            document.getElementById('main-header').classList.remove('hidden');
+            document.getElementById('detail-controls-top').classList.add('hidden');
+            document.getElementById('detail-controls-bottom').classList.add('hidden');
+
+            const gridContainer = document.getElementById('grid-container');
+            gridContainer.classList.remove('detail-mode');
+
+            musicGrids.forEach(g => {
+                const card = document.getElementById(`card-node-${g.id}`);
+                if (card) card.classList.remove('is-active-detail');
+            });
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function downloadCurrentHTML() {
-            const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
-            const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
-            const a = document.createElement("a");
-            a.href = URL.createObjectURL(blob);
-            a.download = "index.html";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
-
         window.addEventListener('DOMContentLoaded', () => {
+            checkAccessToken();
             renderMainGrid();
         });
     </script>
