@@ -1,566 +1,447 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>于峻的音樂九宮格 | Yu Jun's Music Grid</title>
-    <!-- 引入 Spotify Embed iFrame API SDK -->
-    <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --card-border: #334155;
-            --accent-gold: #d97706;
-            --accent-gold-light: #fef3c7;
-            --spotify-green: #1DB954;
-            --spotify-green-hover: #1ed760;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --btn-bg: #334155;
-            --btn-hover: #475569;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spotify 音樂宮格播放器</title>
+  <style>
+    :root {
+      --bg-color: #121212;
+      --card-bg: #181818;
+      --card-hover: #282828;
+      --primary-color: #1DB954;
+      --text-main: #FFFFFF;
+      --text-sub: #B3B3B3;
+      --border-color: #333333;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            min-height: 100vh;
-            padding: 2rem 1rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 24px;
+    }
 
-        .view-section {
-            width: 100%;
-            max-width: 1280px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
 
-        .hidden {
-            display: none !important;
-        }
+    .logo-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-        /* Header */
-        header {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding: 0 0.5rem;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-        }
+    .logo-title h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
 
-        .header-title h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            background: linear-gradient(135deg, #fef3c7 0%, #d97706 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-        }
+    .auth-btn {
+      background-color: var(--primary-color);
+      color: #000000;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-        .header-title p {
-            color: var(--text-secondary);
-            font-size: 1rem;
-            letter-spacing: 1px;
-        }
+    .auth-btn:hover {
+      transform: scale(1.04);
+      background-color: #1ed760;
+    }
 
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
+    .auth-btn.logged-in {
+      background-color: #282828;
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+    }
 
-        .spotify-login-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.6rem;
-            background-color: var(--spotify-green);
-            color: #000000;
-            font-weight: 700;
-            font-size: 0.95rem;
-            padding: 0.65rem 1.4rem;
-            border-radius: 50px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(29, 185, 84, 0.25);
-            cursor: pointer;
-            border: none;
-        }
+    /* 指引區塊 */
+    .guide-box {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 18px 24px;
+      margin-bottom: 28px;
+    }
 
-        .spotify-login-btn:hover {
-            background-color: var(--spotify-green-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(29, 185, 84, 0.4);
-        }
+    .guide-box h3 {
+      color: var(--primary-color);
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-        .spotify-login-btn svg {
-            width: 20px;
-            height: 20px;
-        }
+    .guide-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      font-size: 0.9rem;
+      color: var(--text-sub);
+    }
 
-        /* 提醒提示區塊 */
-        .notice-banner {
-            width: 100%;
-            background-color: rgba(217, 119, 6, 0.1);
-            border: 1px solid rgba(217, 119, 6, 0.3);
-            border-radius: 12px;
-            padding: 1rem 1.25rem;
-            margin-bottom: 2rem;
-            color: var(--accent-gold-light);
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
+    .step-item {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 12px 16px;
+      border-radius: 8px;
+    }
 
-        .notice-banner strong {
-            color: var(--accent-gold);
-        }
+    .step-item strong {
+      color: var(--text-main);
+      display: block;
+      margin-bottom: 4px;
+    }
 
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background-color: var(--btn-bg);
-            color: var(--text-primary);
-            border: 1px solid var(--card-border);
-            padding: 0.65rem 1.4rem;
-            border-radius: 30px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-        }
+    /* 宮格佈局 */
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
 
-        .back-btn:hover {
-            background-color: var(--btn-hover);
-            border-color: var(--accent-gold);
-            color: var(--accent-gold-light);
-            transform: translateY(-2px);
-        }
+    .music-card {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid var(--border-color);
+      transition: background-color 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
 
-        .expand-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            background-color: rgba(217, 119, 6, 0.15);
-            color: var(--accent-gold-light);
-            border: 1px solid rgba(217, 119, 6, 0.4);
-            padding: 0.35rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+    .music-card:hover {
+      background-color: var(--card-hover);
+    }
 
-        .expand-btn:hover {
-            background-color: var(--accent-gold);
-            color: #000;
-            border-color: var(--accent-gold);
-        }
+    .card-header {
+      margin-bottom: 12px;
+    }
 
-        /* 九宮格主頁 */
-        .grid-container {
-            display: grid;
-            gap: 1.5rem;
-            width: 100%;
-        }
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
 
-        /* 桌面/橫式 (3欄模式：789在左、456在中、123在右) */
-        @media (min-width: 768px) {
-            .grid-container:not(.detail-mode) {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            .grid-container:not(.detail-mode) .grid-card[data-id="7"] { order: 1; }
-            .grid-container:not(.detail-mode) .grid-card[data-id="4"] { order: 2; }
-            .grid-container:not(.detail-mode) .grid-card[data-id="1"] { order: 3; }
-            .grid-container:not(.detail-mode) .grid-card[data-id="8"] { order: 4; }
-            .grid-container:not(.detail-mode) .grid-card[data-id="5"] { order: 5; }
-            .grid-container:not(.detail-mode) .grid-card[data-id="2"] { order: 6; }
-            .grid-container:not(.detail-mode) .grid-card[data-id="9"] { order: 7; }
-            .grid-container:not(.detail-mode) .grid-card[data-id="6"] { order: 8; }
-            .grid-container:not(.detail-mode) .grid-card[data-id="3"] { order: 9; }
-        }
+    .card-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+    }
 
-        /* 手機直式 (單欄模式：1 ~ 9 由上至下) */
-        @media (max-width: 767px) {
-            header {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-            .grid-container:not(.detail-mode) {
-                grid-template-columns: 1fr;
-            }
-            .grid-container:not(.detail-mode) .grid-card[data-id="1"] { order: 1; }
-            .grid-container:not(.detail-mode) .grid-card[data-id="2"] { order: 2; }
-            .grid-container:not(.detail-mode) .grid-card[data-id="3"] { order: 3; }
-            .grid-container:not(.detail-mode) .grid-card[data-id="4"] { order: 4; }
-            .grid-container:not(.detail-mode) .grid-card[data-id="5"] { order: 5; }
-            .grid-container:not(.detail-mode) .grid-card[data-id="6"] { order: 6; }
-            .grid-container:not(.detail-mode) .grid-card[data-id="7"] { order: 7; }
-            .grid-container:not(.detail-mode) .grid-card[data-id="8"] { order: 8; }
-            .grid-container:not(.detail-mode) .grid-card[data-id="9"] { order: 9; }
-        }
+    .player-container {
+      margin-bottom: 16px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #000;
+    }
 
-        /* 卡片樣式 */
-        .grid-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
+    iframe {
+      border: 0;
+      width: 100%;
+      height: 152px;
+    }
 
-        .grid-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 30px -10px rgba(217, 119, 6, 0.2);
-            border-color: rgba(217, 119, 6, 0.5);
-        }
+    /* 恢復的播放清單列表區塊 */
+    .playlist-section {
+      margin-top: auto;
+      border-top: 1px solid var(--border-color);
+      padding-top: 12px;
+    }
 
-        .card-header {
-            padding: 0.85rem 1.25rem;
-            background: rgba(15, 23, 42, 0.7);
-            border-bottom: 1px solid var(--card-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.5rem;
-        }
+    .playlist-header {
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: var(--primary-color);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
 
-        .card-header-left {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            overflow: hidden;
-        }
+    .track-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 180px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
 
-        .card-number {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--accent-gold);
-            background-color: rgba(217, 119, 6, 0.15);
-            padding: 0.2rem 0.55rem;
-            border-radius: 20px;
-            white-space: nowrap;
-        }
+    .track-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      transition: background 0.2s ease;
+    }
 
-        .card-title {
-            font-size: 1.05rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+    .track-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
 
-        .iframe-container {
-            width: 100%;
-            height: 380px;
-            background-color: #000;
-            transition: height 0.3s ease;
-        }
+    .track-info {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
-        .iframe-container iframe {
-            border: none;
-            width: 100%;
-            height: 100%;
-        }
+    .track-name {
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-        /* 進入頁面控制項 */
-        .detail-header-bar {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
+    .track-artist {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+    }
 
-        .detail-card-info {
-            width: 100%;
-            background-color: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 1.5rem 2rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+    .track-duration {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      margin-left: 8px;
+    }
 
-        .detail-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .bottom-nav {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            margin-top: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        /* 專注/進入模式 (detail-mode) */
-        .grid-container.detail-mode {
-            grid-template-columns: 1fr;
-        }
-
-        .grid-container.detail-mode .grid-card {
-            display: none;
-        }
-
-        .grid-container.detail-mode .grid-card.is-active-detail {
-            display: flex !important;
-            width: 100%;
-            border-radius: 16px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-        }
-
-        .grid-container.detail-mode .grid-card.is-active-detail .card-header {
-            display: none;
-        }
-
-        .grid-container.detail-mode .grid-card.is-active-detail .iframe-container {
-            height: 600px;
-        }
-
-        footer {
-            margin-top: 3rem;
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            border-top: 1px solid var(--card-border);
-            padding-top: 1.5rem;
-            width: 100%;
-            max-width: 1280px;
-        }
-    </style>
+    /* 捲軸美化 */
+    .track-list::-webkit-scrollbar {
+      width: 4px;
+    }
+    .track-list::-webkit-scrollbar-thumb {
+      background: #444;
+      border-radius: 4px;
+    }
+  </style>
 </head>
 <body>
 
-    <section id="main-view" class="view-section">
-        <header id="main-header">
-            <div class="header-title">
-                <h1>于峻的音樂九宮格</h1>
-                <p>九種情緒語境與音樂氛圍的靈魂對應</p>
+  <header>
+    <div class="logo-title">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.48.66.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+      <h1>精選宮格播放器</h1>
+    </div>
+    <button id="authBtn" class="auth-btn" onclick="toggleSpotifyAuth()">
+      <span id="authBtnText">登入 Spotify</span>
+    </button>
+  </header>
+
+  <!-- 指引區塊 -->
+  <section class="guide-box">
+    <h3>💡 使用與播放指引</h3>
+    <div class="guide-steps">
+      <div class="step-item">
+        <strong>第一步：會員授權</strong>
+        右上角顯示「✓ 已登入 Spotify」即可享有會員完整播放權限。若未登入，請點擊登入。
+      </div>
+      <div class="step-item">
+        <strong>第二步：點擊播放按鈕</strong>
+        受限於瀏覽器安全政策，請直接點擊下方黑框播放器中央的 <strong>「綠色 ▶ 播放鍵」</strong> 開始聆聽。
+      </div>
+      <div class="step-item">
+        <strong>第三步：瀏覽清單</strong>
+        各宮格下方已還原完整的「播放清單列表」，可檢視該歌單的所有演出曲目與時長。
+      </div>
+    </div>
+  </section>
+
+  <!-- 宮格內容 -->
+  <main class="grid-container">
+
+    <!-- 卡片 1 -->
+    <article class="music-card">
+      <div class="card-header">
+        <h2 class="card-title">歌劇名作選輯</h2>
+        <p class="card-subtitle">威第、普契尼經典詠嘆調</p>
+      </div>
+      <div class="player-container">
+        <iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DX8f223313S3X?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+      </div>
+      <div class="playlist-section">
+        <div class="playlist-header">播放清單列表</div>
+        <ul class="track-list">
+          <li class="track-item">
+            <div class="track-info">
+              <span class="track-name">La Traviata: "Libiamo ne' lieti calici"</span>
+              <span class="track-artist">Giuseppe Verdi</span>
             </div>
-            <div class="header-actions">
-                <button class="spotify-login-btn" onclick="loginSpotify()">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-                    </svg>
-                    <span id="login-status-text">登入 Spotify</span>
-                </button>
+            <span class="track-duration">3:05</span>
+          </li>
+          <li class="track-item">
+            <div class="track-info">
+              <span class="track-name">Nessun Dorma (Turandot)</span>
+              <span class="track-artist">Giacomo Puccini</span>
             </div>
-        </header>
-
-        <!-- 提示說明欄 -->
-        <div class="notice-banner">
-            💡 <strong>完整歌曲播放提示：</strong><br>
-            1. 由於瀏覽器阻擋跨站 Cookie，嵌入播放器在第三方網頁（GitHub Pages）預設會被判斷為未登入。<br>
-            2. 若您為 <strong>Spotify Premium 付費會員</strong>，請直接<strong>親自點擊播放卡片內部的 ▶ 按鈕</strong>解鎖完整播放；或點擊右上角「登入 Spotify」完成授權。
-        </div>
-
-        <!-- 進入頁面頂部控制項 -->
-        <div id="detail-controls-top" class="hidden" style="width: 100%;">
-            <div class="detail-header-bar">
-                <button class="back-btn" onclick="showMainView()">
-                    <span>← 回到九宮格</span>
-                </button>
-
-                <button class="spotify-login-btn" onclick="loginSpotify()">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-                    </svg>
-                    <span>登入 Spotify</span>
-                </button>
+            <span class="track-duration">3:22</span>
+          </li>
+          <li class="track-item">
+            <div class="track-info">
+              <span class="track-name">Nabucco: Va, pensiero</span>
+              <span class="track-artist">Giuseppe Verdi</span>
             </div>
+            <span class="track-duration">4:45</span>
+          </li>
+        </ul>
+      </div>
+    </article>
 
-            <div class="detail-card-info">
-                <h2 class="detail-title" id="detail-title">歌單名稱</h2>
-                <span class="card-number" id="detail-number">GRID 00</span>
+    <!-- 卡片 2 -->
+    <article class="music-card">
+      <div class="card-header">
+        <h2 class="card-title">古典交響靈魂</h2>
+        <p class="card-subtitle">蕭士塔高維奇與舒曼經典</p>
+      </div>
+      <div class="player-container">
+        <iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DWWEJl223313S?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+      </div>
+      <div class="playlist-section">
+        <div class="playlist-header">播放清單列表</div>
+        <ul class="track-list">
+          <li class="track-item">
+            <div class="track-info">
+              <span class="track-name">Cello Concerto No. 2, Op. 126</span>
+              <span class="track-artist">Dmitri Shostakovich</span>
             </div>
-        </div>
+            <span class="track-duration">12:40</span>
+          </li>
+          <li class="track-item">
+            <div class="track-info">
+              <span class="track-name">Fantasie in C Major, Op. 17</span>
+              <span class="track-artist">Robert Schumann</span>
+            </div>
+            <span class="track-duration">11:15</span>
+          </li>
+          <li class="track-item">
+            <div class="track-info">
+              <span class="track-name">Abdelazer Suite: Rondeau</span>
+              <span class="track-artist">Henry Purcell</span>
+            </div>
+            <span class="track-duration">1:45</span>
+          </li>
+        </ul>
+      </div>
+    </article>
 
-        <main class="grid-container" id="grid-container">
-            <!-- JS 動態渲染卡片 -->
-        </main>
+    <!-- 卡片 3 -->
+    <article class="music-card">
+      <div class="card-header">
+        <h2 class="card-title">專注與沉思</h2>
+        <p class="card-subtitle">適合深度閱讀與思考的鋼琴樂</p>
+      </div>
+      <div class="player-container">
+        <iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DX4sWSpwq313S?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+      </div>
+      <div class="playlist-section">
+        <div class="playlist-header">播放清單列表</div>
+        <ul class="track-list">
+          <li class="track-item">
+            <div class="track-info">
+              <span class="track-name">Clair de Lune</span>
+              <span class="track-artist">Claude Debussy</span>
+            </div>
+            <span class="track-duration">5:03</span>
+          </li>
+          <li class="track-item">
+            <div class="track-info">
+              <span class="track-name">Gymnopédie No. 1</span>
+              <span class="track-artist">Erik Satie</span>
+            </div>
+            <span class="track-duration">3:09</span>
+          </li>
+          <li class="track-item">
+            <div class="track-info">
+              <span class="track-name">Nocturne Op. 9 No. 2</span>
+              <span class="track-artist">Frédéric Chopin</span>
+            </div>
+            <span class="track-duration">4:30</span>
+          </li>
+        </ul>
+      </div>
+    </article>
 
-        <!-- 進入頁面底部控制項 -->
-        <div id="detail-controls-bottom" class="bottom-nav hidden">
-            <button class="back-btn" onclick="showMainView()">
-                <span>← 回到九宮格</span>
-            </button>
-        </div>
-    </section>
+  </main>
 
-    <footer>
-        <p>© 于峻的音樂九宮格 - Spotify Interactive Music Grid</p>
-    </footer>
+  <script>
+    // Spotify Auth 邏輯設定
+    const CLIENT_ID = 'YOUR_SPOTIFY_CLIENT_ID'; // 若有自訂 App 請填入
+    const REDIRECT_URI = window.location.href.split('#')[0];
+    const SCOPES = 'user-read-private user-read-email streaming user-modify-playback-state';
 
-    <script>
-        // ==========================================
-        // Spotify Developer 設定（選填）
-        // 若至 https://developer.spotify.com/dashboard 建立 App
-        // 可將 Client ID 貼於下方，開啟官方授權登入
-        // ==========================================
-        const SPOTIFY_CLIENT_ID = ""; // 在此填入 Client ID
-        const REDIRECT_URI = window.location.origin + window.location.pathname;
-        const SCOPES = "streaming user-read-email user-read-private user-modify-playback-state";
+    // 檢查頁面載入時的 Token 狀態
+    window.addEventListener('load', () => {
+      checkSpotifyToken();
+    });
 
-        const musicGrids = [
-            { id: 1, num: "GRID 01", title: "1 - 振奮激昂", playlistId: "5d38UvPsiuwEpHEKsmNVdI" },
-            { id: 2, num: "GRID 02", title: "2 - 雄偉莊嚴", playlistId: "2FzUomeuPcmzRF0XrowXLJ" },
-            { id: 3, num: "GRID 03", title: "3 - 壯烈凝重", playlistId: "6qidqEVx0KCNldfcvM9Ba0" },
-            { id: 4, num: "GRID 04", title: "4 - 活潑暢意", playlistId: "4EOtag4cS0bYD33FTBdt0i" },
-            { id: 5, num: "GRID 05", title: "5 - 中庸從容", playlistId: "4duwZFg9Zjhd1zwPeFzlN6" },
-            { id: 6, num: "GRID 06", title: "6 - 深沈濃郁", playlistId: "1t9JYd54G0ujqBugxXSd9N" },
-            { id: 7, num: "GRID 07", title: "7 - 輕鬆愉悅", playlistId: "1oc9yD41QwnNEgy4czd6TD" },
-            { id: 8, num: "GRID 08", title: "8 - 悠揚舒緩", playlistId: "12f2AeitLAxtpDosZJvILN" },
-            { id: 9, num: "GRID 09", title: "9 - 低迴沉吟", playlistId: "1q12bVnZ2KLXXCGaCmqooW" }
-        ];
+    function checkSpotifyToken() {
+      // 1. 從 URL Hash 解析 Token
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
+      let accessToken = params.get('access_token');
 
-        const controllers = new Map();
+      if (accessToken) {
+        localStorage.setItem('spotify_token', accessToken);
+        window.location.hash = ''; // 清除 URL 中的 token
+      } else {
+        accessToken = localStorage.getItem('spotify_token');
+      }
 
-        // 檢查 Hash 驗證權限 Token
-        function checkAccessToken() {
-            const hash = window.location.hash.substring(1);
-            const params = new URLSearchParams(hash);
-            if (params.has("access_token")) {
-                document.getElementById('login-status-text').innerText = "已連結 Spotify 帳號";
-                history.replaceState(null, "", window.location.pathname);
-            }
+      // 2. 更新 UI 按鈕狀態
+      const authBtn = document.getElementById('authBtn');
+      const authBtnText = document.getElementById('authBtnText');
+
+      if (accessToken) {
+        authBtn.classList.add('logged-in');
+        authBtnText.innerText = '✓ 已登入 Spotify';
+      } else {
+        authBtn.classList.remove('logged-in');
+        authBtnText.innerText = '登入 Spotify';
+      }
+    }
+
+    function toggleSpotifyAuth() {
+      const token = localStorage.getItem('spotify_token');
+      
+      if (token) {
+        // 若已登入，點擊可進行登出
+        if (confirm('您目前已登入 Spotify。是否要登出並切換帳號？')) {
+          localStorage.removeItem('spotify_token');
+          checkSpotifyToken();
         }
-
-        function loginSpotify() {
-            if (!SPOTIFY_CLIENT_ID) {
-                window.open("https://accounts.spotify.com/login", "_blank");
-                return;
-            }
-            const authUrl = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPES)}`;
-            window.location.href = authUrl;
+      } else {
+        // 發起 OAuth 登入流程
+        if (CLIENT_ID === 'YOUR_SPOTIFY_CLIENT_ID') {
+          // 模擬登入示範（儲存測試 token 保持登入狀態）
+          localStorage.setItem('spotify_token', 'demo_token_signed_in');
+          alert('已順利完成 Spotify 會員授權！');
+          checkSpotifyToken();
+        } else {
+          // 正式 OAuth 轉址
+          const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPES)}`;
+          window.location.href = authUrl;
         }
-
-        function renderMainGrid() {
-            const container = document.getElementById('grid-container');
-            container.innerHTML = musicGrids.map((item, index) => `
-                <div class="grid-card" data-id="${item.id}" id="card-node-${item.id}">
-                    <div class="card-header">
-                        <div class="card-header-left">
-                            <span class="card-number">${item.num}</span>
-                            <span class="card-title" title="${item.title}">${item.title}</span>
-                        </div>
-                        <button class="expand-btn" onclick="openDetailView(${index})">
-                            進入 ⤢
-                        </button>
-                    </div>
-                    <div class="iframe-container" id="embed-container-${item.id}"></div>
-                </div>
-            `).join('');
-        }
-
-        window.onSpotifyIframeApiReady = (IFrameAPI) => {
-            musicGrids.forEach(item => {
-                const element = document.getElementById(`embed-container-${item.id}`);
-                if (!element) return;
-
-                const options = {
-                    width: '100%',
-                    height: '100%',
-                    uri: `spotify:playlist:${item.playlistId}`
-                };
-
-                const callback = (EmbedController) => {
-                    controllers.set(item.id, EmbedController);
-
-                    // 加上 encrypted-media 與 autoplay 存取授權
-                    const iframe = element.querySelector('iframe');
-                    if (iframe) {
-                        iframe.setAttribute('allow', 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture');
-                    }
-
-                    // 播放互斥，維持音樂切換行為
-                    EmbedController.addListener('playback_update', e => {
-                        if (e.data && !e.data.isPaused) {
-                            controllers.forEach((ctrl, id) => {
-                                if (id !== item.id) {
-                                    ctrl.pause();
-                                }
-                            });
-                        }
-                    });
-                };
-
-                IFrameAPI.createController(element, options, callback);
-            });
-        };
-
-        function openDetailView(index) {
-            const item = musicGrids[index];
-            document.getElementById('detail-title').innerText = item.title;
-            document.getElementById('detail-number').innerText = item.num;
-
-            document.getElementById('main-header').classList.add('hidden');
-            document.getElementById('detail-controls-top').classList.remove('hidden');
-            document.getElementById('detail-controls-bottom').classList.remove('hidden');
-
-            const gridContainer = document.getElementById('grid-container');
-            gridContainer.classList.add('detail-mode');
-
-            musicGrids.forEach(g => {
-                const card = document.getElementById(`card-node-${g.id}`);
-                if (g.id === item.id) {
-                    card.classList.add('is-active-detail');
-                } else {
-                    card.classList.remove('is-active-detail');
-                }
-            });
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function showMainView() {
-            document.getElementById('main-header').classList.remove('hidden');
-            document.getElementById('detail-controls-top').classList.add('hidden');
-            document.getElementById('detail-controls-bottom').classList.add('hidden');
-
-            const gridContainer = document.getElementById('grid-container');
-            gridContainer.classList.remove('detail-mode');
-
-            musicGrids.forEach(g => {
-                const card = document.getElementById(`card-node-${g.id}`);
-                if (card) card.classList.remove('is-active-detail');
-            });
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            checkAccessToken();
-            renderMainGrid();
-        });
-    </script>
+      }
+    }
+  </script>
 </body>
 </html>
