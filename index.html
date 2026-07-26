@@ -187,7 +187,7 @@
 
         .iframe-container {
             width: 100%;
-            height: 380px; /* 九宮格模式下的預設高度 */
+            height: 380px;
             background-color: #000;
             transition: height 0.3s ease;
         }
@@ -237,10 +237,8 @@
             display: none;
         }
 
-        /* 詳細模式下，將 iframe 容器高度拉長，使內部曲目充滿畫面 */
         body.detail-mode .grid-card.is-active .iframe-container {
-            height: calc(100vh - 180px);
-            min-height: 550px;
+            height: 680px;
         }
 
         footer {
@@ -381,10 +379,9 @@
                 const element = document.getElementById(`embed-container-${item.id}`);
                 if (!element) return;
 
-                // 核心修改：將 Spotify 內建高度設為 100%，讓它能填滿外部拉長後的容器
                 const options = {
                     width: '100%',
-                    height: '100%', 
+                    height: '380',
                     uri: `spotify:playlist:${item.playlistId}`
                 };
 
