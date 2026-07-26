@@ -153,26 +153,29 @@
         .card-number { font-size: 0.8rem; font-weight: 700; color: var(--accent-gold); background-color: rgba(217, 119, 6, 0.15); padding: 0.2rem 0.55rem; border-radius: 20px; }
         .card-title { font-size: 1.05rem; font-weight: 600; color: var(--text-primary); }
 
-        /* iframe 設定 */
         .iframe-container { width: 100%; height: 380px; transition: height 0.3s ease; }
         .iframe-container iframe { width: 100% !important; height: 100% !important; border: none; }
 
-        /* v1.03: 優化展開後的排版 */
+        /* v1.04: 進入各別宮格時，移除進入按鈕 */
         body.detail-mode .grid-card.is-active {
             border-color: var(--accent-gold);
             width: 100%;
-            max-width: 900px; /* 限制寬度，讓播放器看起來更精緻不拉伸 */
+            max-width: 900px;
             margin: 0 auto;
         }
 
+        body.detail-mode .grid-card.is-active .enter-btn {
+            display: none !important;
+        }
+
         body.detail-mode .grid-card.is-active .iframe-container {
-            height: 600px; /* 設定為專業播放器常用的固定高度 */
+            height: 600px;
             min-height: 450px;
         }
 
         @media (max-width: 768px) {
             body.detail-mode .grid-card.is-active .iframe-container {
-                height: 70vh; /* 手機端自動適應高度 */
+                height: 70vh;
             }
         }
 
@@ -233,7 +236,7 @@
     </section>
 
     <footer>
-        <p>© 于峻的音樂九宮格網頁互動版 (v1.03)</p>
+        <p>© 于峻的音樂九宮格網頁互動版 (v1.04)</p>
     </footer>
 
     <script>
@@ -248,8 +251,6 @@
             { id: 8, num: "GRID 08", title: "8 - 悠揚舒緩", playlistId: "12f2AeitLAxtpDosZJvILN", colors: ['#312e81', '#4c1d95'] },
             { id: 9, num: "GRID 09", title: "9 - 低迴沉吟", playlistId: "1q12bVnZ2KLXXCGaCmqooW", colors: ['#020617', '#1e293b'] }
         ];
-
-        const controllers = new Map();
 
         function renderMainGrid() {
             const container = document.getElementById('grid-container');
@@ -273,9 +274,7 @@
             musicGrids.forEach(item => {
                 const element = document.getElementById(`embed-container-${item.id}`);
                 const options = { width: '100%', height: '380', uri: `spotify:playlist:${item.playlistId}` };
-                IFrameAPI.createController(element, options, (EmbedController) => {
-                    controllers.set(item.id, EmbedController);
-                });
+                IFrameAPI.createController(element, options, (EmbedController) => {});
             });
         };
 
@@ -297,7 +296,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 簡單的登入狀態模擬
         const loginBtn = document.querySelectorAll('.spotify-login-btn');
         loginBtn.forEach(btn => btn.addEventListener('click', (e) => {
             localStorage.setItem('spotify_is_logged_in', 'true');
