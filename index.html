@@ -85,6 +85,12 @@
             flex-wrap: wrap;
             gap: 1rem;
         }
+        
+        .detail-header-bar .left-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
 
         .bottom-nav { width: 100%; display: none; justify-content: center; margin-top: 1rem; margin-bottom: 2rem; }
 
@@ -115,6 +121,24 @@
             cursor: pointer; transition: all 0.2s ease;
         }
         .back-btn:hover { background-color: var(--btn-hover); border-color: var(--accent-gold); color: var(--accent-gold-light); }
+
+        /* 隨機播放按鈕 */
+        .random-play-btn {
+            display: none; /* 預設隱藏，由 body 的 class 決定顯示 */
+            align-items: center; gap: 0.4rem;
+            background-color: var(--spotify-green); color: #000;
+            border: none; padding: 0.65rem 1.4rem;
+            border-radius: 30px; font-size: 0.95rem; font-weight: 700;
+            cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(29, 185, 84, 0.25);
+        }
+        .random-play-btn:hover { background-color: var(--spotify-green-hover); transform: translateY(-2px); }
+        .random-play-btn svg { width: 18px; height: 18px; }
+
+        /* 只有在進入 Detail 模式且已經登入時，才顯示隨機播放按鈕 */
+        body.detail-mode.is-logged-in .random-play-btn {
+            display: inline-flex;
+        }
 
         .enter-btn {
             display: inline-flex; align-items: center; gap: 0.3rem;
@@ -216,6 +240,7 @@
             display: none !important;
         }
 
+        /* 啟動 Detail 模式時，卡片高度自動填滿視窗 */
         body.detail-mode .grid-card.is-active {
             order: initial !important;
             width: 100%;
@@ -223,10 +248,17 @@
             margin: 0 auto;
             border-color: var(--accent-gold);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            
+            /* 填滿視窗高度的關鍵設定 */
+            height: calc(100vh - 160px); 
+            min-height: 550px; /* 防止螢幕過小時崩潰 */
+            display: flex;
+            flex-direction: column;
         }
 
         body.detail-mode .grid-card.is-active .card-header {
             padding: 1.25rem 1.75rem;
+            flex-shrink: 0;
         }
 
         body.detail-mode .grid-card.is-active .card-title {
@@ -237,8 +269,10 @@
             display: none;
         }
 
+        /* 讓 iframe 填補剩下的所有空間 */
         body.detail-mode .grid-card.is-active .iframe-container {
-            height: 680px;
+            flex-grow: 1; 
+            height: auto; 
         }
 
         footer {
@@ -274,9 +308,19 @@
         </div>
 
         <div class="detail-header-bar">
-            <button class="back-btn" onclick="showMainView()">
-                <span>← 回到九宮格</span>
-            </button>
+            <div class="left-actions">
+                <button class="back-btn" onclick="showMainView()">
+                    <span>← 回到九宮格</span>
+                </button>
+                
+                <!-- 新增：隨機播放按鈕 -->
+                <button class="random-play-btn" onclick="playRandom()" title="前往 Spotify 完整版進行隨機播放">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/>
+                    </svg>
+                    <span>隨機播放</span>
+                </button>
+            </div>
 
             <a href="https://accounts.spotify.com/login?continue=https%3A%2F%2Fopen.spotify.com" target="_blank" rel="noopener noreferrer" class="spotify-login-btn" onclick="handleSpotifyLogin(event)">
                 <svg viewBox="0 0 24 24" fill="currentColor">
@@ -313,9 +357,18 @@
         ];
 
         const controllers = new Map();
+        let currentActiveGridId = null;
 
         function updateSpotifyLoginUI(isLoggedIn) {
             const btns = document.querySelectorAll('.spotify-login-btn');
+            
+            if (isLoggedIn) {
+                // 加入 class 以控制隨機播放按鈕的顯示
+                document.body.classList.add('is-logged-in'); 
+            } else {
+                document.body.classList.remove('is-logged-in');
+            }
+
             btns.forEach(btn => {
                 const textSpan = btn.querySelector('.spotify-btn-text');
                 if (isLoggedIn) {
@@ -403,6 +456,8 @@
         };
 
         function enterGrid(id) {
+            currentActiveGridId = id; // 記錄當前宮格 ID
+            
             document.querySelectorAll('.grid-card').forEach(card => {
                 card.classList.remove('is-active');
             });
@@ -417,11 +472,22 @@
         }
 
         function showMainView() {
+            currentActiveGridId = null; // 清空當前宮格 ID
+            
             document.body.classList.remove('detail-mode');
             document.querySelectorAll('.grid-card').forEach(card => {
                 card.classList.remove('is-active');
             });
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function playRandom() {
+            if (!currentActiveGridId) return;
+            const grid = musicGrids.find(g => g.id === currentActiveGridId);
+            if (grid) {
+                alert('為您開啟 Spotify 進行隨機播放！\n\n(註：因官方網頁嵌入版 API 尚未支援隨機播放控制，將為您導向 Spotify 完整版)');
+                window.open(`https://open.spotify.com/playlist/${grid.playlistId}`, '_blank');
+            }
         }
     </script>
 </body>
