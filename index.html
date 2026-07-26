@@ -45,11 +45,11 @@
             background: linear-gradient(135deg, var(--theme-color-1, var(--bg-color)), var(--theme-color-2, var(--bg-color)));
             z-index: -1;
             opacity: 0;
-            transition: opacity 0.8s ease; /* 0.8 秒平滑漸變 */
+            transition: opacity 0.8s ease;
         }
 
         body.detail-mode::before {
-            opacity: 1; /* 進入單一卡片時，讓漸層背景浮現 */
+            opacity: 1;
         }
 
         .view-section { width: 100%; max-width: 1280px; display: flex; flex-direction: column; align-items: center; }
@@ -186,7 +186,6 @@
         .card-number { font-size: 0.8rem; font-weight: 700; color: var(--accent-gold); background-color: rgba(217, 119, 6, 0.15); padding: 0.2rem 0.55rem; border-radius: 20px; white-space: nowrap; }
         .card-title { font-size: 1.05rem; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* 預設高度 380px 確保載入時不過長 */
         .iframe-container {
             width: 100%;
             height: 380px;
@@ -200,16 +199,14 @@
             border: none;
         }
 
-        /* 轉場動畫設定 */
+        /* 轉場動畫 */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         body.detail-mode header,
-        body.detail-mode .premium-tip-banner {
-            display: none;
-        }
+        body.detail-mode .premium-tip-banner { display: none; }
 
         body.detail-mode .detail-header-bar,
         body.detail-mode .bottom-nav {
@@ -217,14 +214,10 @@
             animation: fadeIn 0.4s ease forwards;
         }
 
-        body.detail-mode .grid-container {
-            display: block;
-        }
+        body.detail-mode .grid-container { display: block; }
+        body.detail-mode .grid-card:not(.is-active) { display: none !important; }
 
-        body.detail-mode .grid-card:not(.is-active) {
-            display: none !important;
-        }
-
+        /* v1.02: 彈性高度佈局，自動充滿螢幕 */
         body.detail-mode .grid-card.is-active {
             order: initial !important;
             width: 100%;
@@ -233,28 +226,22 @@
             border-color: var(--accent-gold);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
             animation: fadeIn 0.4s ease forwards;
+            
+            /* 使用 Flexbox 讓卡片填滿螢幕剩餘空間 */
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 4rem); 
         }
 
-        body.detail-mode .grid-card.is-active .card-header {
-            padding: 1.25rem 1.75rem;
-        }
+        body.detail-mode .grid-card.is-active .card-header { padding: 1.25rem 1.75rem; }
+        body.detail-mode .grid-card.is-active .card-title { font-size: 1.5rem; }
+        body.detail-mode .grid-card.is-active .enter-btn { display: none; }
 
-        body.detail-mode .grid-card.is-active .card-title {
-            font-size: 1.5rem;
-        }
-
-        body.detail-mode .grid-card.is-active .enter-btn {
-            display: none;
-        }
-
-        /* 進入單一宮格後，播放器高度改用 vh 自適應，減少滾動需求 */
         body.detail-mode .grid-card.is-active .iframe-container {
-            height: 85vh; 
-            min-height: 600px;
-            max-height: 1000px;
+            flex-grow: 1; /* 自動伸展充滿父容器 */
+            height: auto !important; /* 覆蓋掉原本的固定高度 */
         }
 
-        /* 移至底部的提示區塊樣式 */
         .premium-tip-banner {
             width: 100%;
             background-color: rgba(217, 119, 6, 0.1);
@@ -290,7 +277,6 @@
         <header>
             <div class="header-title">
                 <h1>于峻的音樂九宮格</h1>
-                <!-- 移除了「靈魂」兩字 -->
                 <p>九種情緒語境與音樂氛圍的對應</p>
             </div>
             <a href="https://accounts.spotify.com/login?continue=https%3A%2F%2Fopen.spotify.com" target="_blank" rel="noopener noreferrer" class="spotify-login-btn" onclick="handleSpotifyLogin(event)">
@@ -322,15 +308,13 @@
             </button>
         </div>
 
-        <!-- 提示區塊移至版權宣告上方，並新增允許跨網站追蹤的說明 -->
         <div class="premium-tip-banner">
             <span>🎵 <strong>播放全曲提示：</strong> 若已是 Premium 會員仍只能聽 30 秒試聽，請點擊「登入 Spotify」或先在同一瀏覽器前往 <a href="https://open.spotify.com" target="_blank" rel="noopener noreferrer">open.spotify.com</a> 登入，並確保瀏覽器未阻擋第三方跨網域 Cookie（如設定為「允許跨網站追蹤」）。</span>
         </div>
     </section>
 
     <footer>
-        <!-- 更新版權宣告並加上版本號 -->
-        <p>© 于峻的音樂九宮格網頁互動版 (v1.01)</p>
+        <p>© 于峻的音樂九宮格網頁互動版 (v1.02)</p>
     </footer>
 
     <script>
@@ -446,7 +430,6 @@
                 targetCard.classList.add('is-active');
             }
 
-            // 尋找對應的情緒色票，並寫入 CSS 變數中
             const gridData = musicGrids.find(item => item.id === id);
             if (gridData && gridData.colors) {
                 document.documentElement.style.setProperty('--theme-color-1', gridData.colors[0]);
@@ -455,7 +438,6 @@
 
             document.body.classList.add('detail-mode');
             
-            // 稍微延遲滾動，讓 display:block 生效後再抓取位置
             setTimeout(() => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }, 50);
@@ -463,8 +445,6 @@
 
         function showMainView() {
             document.body.classList.remove('detail-mode');
-            
-            // 配合 CSS 動畫的時間，讓視覺過渡更自然
             setTimeout(() => {
                 document.querySelectorAll('.grid-card').forEach(card => {
                     card.classList.remove('is-active');
