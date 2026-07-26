@@ -24,6 +24,13 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
+        /* 右上角小小版本號 */
+        .version-tag {
+            position: fixed; top: 8px; right: 8px;
+            font-size: 0.7rem; color: #475569; z-index: 999;
+            pointer-events: none; opacity: 0.8;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", sans-serif;
             background-color: var(--bg-color);
@@ -125,8 +132,18 @@
 
         .grid-container { display: grid; gap: 1.5rem; width: 100%; }
 
+        /* 寬螢幕自定義排列 (左789 中456 右123) */
         @media (min-width: 768px) {
             .grid-container { grid-template-columns: repeat(3, 1fr); }
+            .grid-card[data-id="7"] { order: 1; }
+            .grid-card[data-id="4"] { order: 2; }
+            .grid-card[data-id="1"] { order: 3; }
+            .grid-card[data-id="8"] { order: 4; }
+            .grid-card[data-id="5"] { order: 5; }
+            .grid-card[data-id="2"] { order: 6; }
+            .grid-card[data-id="9"] { order: 7; }
+            .grid-card[data-id="6"] { order: 8; }
+            .grid-card[data-id="3"] { order: 9; }
         }
 
         .grid-card {
@@ -156,17 +173,15 @@
         .iframe-container { width: 100%; height: 380px; transition: height 0.3s ease; }
         .iframe-container iframe { width: 100% !important; height: 100% !important; border: none; }
 
-        /* v1.04: 進入各別宮格時，移除進入按鈕 */
         body.detail-mode .grid-card.is-active {
             border-color: var(--accent-gold);
             width: 100%;
             max-width: 900px;
             margin: 0 auto;
+            order: initial !important; /* 確保詳細模式不受欄位排列影響 */
         }
 
-        body.detail-mode .grid-card.is-active .enter-btn {
-            display: none !important;
-        }
+        body.detail-mode .grid-card.is-active .enter-btn { display: none !important; }
 
         body.detail-mode .grid-card.is-active .iframe-container {
             height: 600px;
@@ -174,9 +189,7 @@
         }
 
         @media (max-width: 768px) {
-            body.detail-mode .grid-card.is-active .iframe-container {
-                height: 70vh;
-            }
+            body.detail-mode .grid-card.is-active .iframe-container { height: 70vh; }
         }
 
         body.detail-mode .grid-container { display: block; }
@@ -207,6 +220,7 @@
     </style>
 </head>
 <body>
+    <div class="version-tag">v1.05</div>
 
     <section class="view-section">
         <header>
@@ -236,7 +250,7 @@
     </section>
 
     <footer>
-        <p>© 于峻的音樂九宮格網頁互動版 (v1.04)</p>
+        <p>© 于峻的音樂九宮格網頁互動版 (v1.05)</p>
     </footer>
 
     <script>
