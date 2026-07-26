@@ -171,27 +171,15 @@
         .card-header-left { 
             display: flex; 
             align-items: center; 
-            gap: 0.6rem; 
             overflow: hidden; 
             min-width: 0; 
         }
 
-        .card-number { 
-            font-size: 0.8rem; 
-            font-weight: 700; 
-            color: var(--accent-gold); 
-            background-color: rgba(217, 119, 6, 0.15); 
-            padding: 0.2rem 0.55rem; 
-            border-radius: 20px; 
-            white-space: nowrap; 
-            flex-shrink: 0; 
-        }
-
-        /* 標題樣式升級：中英雙色與排版 */
+        /* 放大標題字級，同時嚴格控制為單行不破版 */
         .card-title-container {
             display: flex;
             align-items: baseline;
-            gap: 0.4rem;
+            gap: 0.5rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -199,16 +187,18 @@
         }
 
         .card-title-zh { 
-            font-size: 1.05rem; 
-            font-weight: 600; 
+            font-size: 1.15rem; 
+            font-weight: 700; 
             color: var(--text-primary); 
+            letter-spacing: 0.5px;
         }
 
         .card-title-en { 
-            font-size: 0.9rem; 
-            font-weight: 400; 
+            font-size: 0.98rem; 
+            font-weight: 500; 
             color: var(--accent-gold-light); 
-            opacity: 0.9;
+            opacity: 0.95;
+            letter-spacing: 0.3px;
         }
 
         .iframe-container { width: 100%; height: 380px; transition: height 0.3s ease; background-color: #000; }
@@ -285,7 +275,7 @@
     </style>
 </head>
 <body>
-    <div class="version-tag">v1.15</div>
+    <div class="version-tag">v1.16</div>
 
     <section class="view-section">
         <header>
@@ -319,20 +309,20 @@
     </section>
 
     <footer>
-        <p>© 于峻的音樂九宮格網頁互動版 (v1.15)</p>
+        <p>© 于峻的音樂九宮格網頁互動版 (v1.16)</p>
     </footer>
 
     <script>
         const musicGrids = [
-            { id: 1, num: "GRID 01", titleZh: "1 - 振奮激昂", titleEn: "Invigorating", playlistId: "5d38UvPsiuwEpHEKsmNVdI", colors: ['#450a0a', '#9a3412'] },
-            { id: 2, num: "GRID 02", titleZh: "2 - 雄偉莊嚴", titleEn: "Majestic", playlistId: "2FzUomeuPcmzRF0XrowXLJ", colors: ['#172554', '#78350f'] },
-            { id: 3, num: "GRID 03", titleZh: "3 - 壯烈凝重", titleEn: "Pathétique", playlistId: "6qidqEVx0KCNldfcvM9Ba0", colors: ['#0c0a09', '#450a0a'] },
-            { id: 4, num: "GRID 04", titleZh: "4 - 活潑暢意", titleEn: "Exuberant", playlistId: "4EOtag4cS0bYD33FTBdt0i", colors: ['#042f2e', '#0369a1'] },
-            { id: 5, num: "GRID 05", titleZh: "5 - 中庸從容", titleEn: "Moderato", playlistId: "4duwZFg9Zjhd1zwPeFzlN6", colors: ['#1e293b', '#334155'] },
-            { id: 6, num: "GRID 06", titleZh: "6 - 深沈濃郁", titleEn: "Intense", playlistId: "1t9JYd54G0ujqBugxXSd9N", colors: ['#2e1065', '#111827'] },
-            { id: 7, num: "GRID 07", titleZh: "7 - 輕鬆愉悅", titleEn: "Breezy", playlistId: "1oc9yD41QwnNEgy4czd6TD", colors: ['#1e3a8a', '#0891b2'] },
-            { id: 8, num: "GRID 08", titleZh: "8 - 悠揚舒緩", titleEn: "Soothing", playlistId: "12f2AeitLAxtpDosZJvILN", colors: ['#312e81', '#4c1d95'] },
-            { id: 9, num: "GRID 09", titleZh: "9 - 低迴沉吟", titleEn: "Melancholic", playlistId: "1q12bVnZ2KLXXCGaCmqooW", colors: ['#020617', '#1e293b'] }
+            { id: 1, titleZh: "1 - 振奮激昂", titleEn: "Invigorating", playlistId: "5d38UvPsiuwEpHEKsmNVdI", colors: ['#450a0a', '#9a3412'] },
+            { id: 2, titleZh: "2 - 雄偉莊嚴", titleEn: "Majestic", playlistId: "2FzUomeuPcmzRF0XrowXLJ", colors: ['#172554', '#78350f'] },
+            { id: 3, titleZh: "3 - 壯烈凝重", titleEn: "Pathétique", playlistId: "6qidqEVx0KCNldfcvM9Ba0", colors: ['#0c0a09', '#450a0a'] },
+            { id: 4, titleZh: "4 - 活潑暢意", titleEn: "Exuberant", playlistId: "4EOtag4cS0bYD33FTBdt0i", colors: ['#042f2e', '#0369a1'] },
+            { id: 5, titleZh: "5 - 中庸從容", titleEn: "Moderato", playlistId: "4duwZFg9Zjhd1zwPeFzlN6", colors: ['#1e293b', '#334155'] },
+            { id: 6, titleZh: "6 - 深沈濃郁", titleEn: "Intense", playlistId: "1t9JYd54G0ujqBugxXSd9N", colors: ['#2e1065', '#111827'] },
+            { id: 7, titleZh: "7 - 輕鬆愉悅", titleEn: "Breezy", playlistId: "1oc9yD41QwnNEgy4czd6TD", colors: ['#1e3a8a', '#0891b2'] },
+            { id: 8, titleZh: "8 - 悠揚舒緩", titleEn: "Soothing", playlistId: "12f2AeitLAxtpDosZJvILN", colors: ['#312e81', '#4c1d95'] },
+            { id: 9, titleZh: "9 - 低迴沉吟", titleEn: "Melancholic", playlistId: "1q12bVnZ2KLXXCGaCmqooW", colors: ['#020617', '#1e293b'] }
         ];
 
         const controllers = new Map();
@@ -394,7 +384,6 @@
                 <div class="grid-card" data-id="${item.id}">
                     <div class="card-header">
                         <div class="card-header-left">
-                            <span class="card-number">${item.num}</span>
                             <div class="card-title-container" title="${item.titleZh} ${item.titleEn}">
                                 <span class="card-title-zh">${item.titleZh}</span>
                                 <span class="card-title-en">${item.titleEn}</span>
