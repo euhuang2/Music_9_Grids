@@ -24,17 +24,17 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* 右上角版本號標籤：提升清晰度與對比度 */
+        /* 右上角版本號標籤：稍微不明顯一點點 */
         .version-tag {
             position: fixed; 
             top: 10px; 
             right: 12px;
             font-size: 0.75rem; 
             font-weight: 500;
-            color: var(--text-secondary); /* 調亮為 #94a3b8 */
+            color: var(--text-secondary);
             z-index: 999;
             pointer-events: none; 
-            opacity: 0.95;
+            opacity: 0.65;
             letter-spacing: 0.5px;
         }
 
@@ -216,6 +216,18 @@
             color: var(--accent-gold-light);
         }
 
+        /* 加強 open.spotify.com 連結對比度與亮度和懸停效果 */
+        .premium-tip-banner a {
+            color: #fbbf24;
+            font-weight: 600;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            transition: color 0.2s ease;
+        }
+        .premium-tip-banner a:hover {
+            color: #ffffff;
+        }
+
         footer {
             margin-top: 2rem;
             text-align: center;
@@ -228,13 +240,13 @@
     </style>
 </head>
 <body>
-    <div class="version-tag">v1.08</div>
+    <div class="version-tag">v1.09</div>
 
     <section class="view-section">
         <header>
             <div class="header-title">
                 <h1>于峻的音樂九宮格</h1>
-                <p>九種情緒語境與音樂氛圍的靈魂對應</p>
+                <p>九種情緒語境與音樂氛圍的對應</p>
             </div>
             <a href="https://accounts.spotify.com/login?continue=https%3A%2F%2Fopen.spotify.com" target="_blank" rel="noopener noreferrer" class="spotify-login-btn" onclick="handleSpotifyLogin(event)">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
@@ -262,7 +274,7 @@
     </section>
 
     <footer>
-        <p>© 于峻的音樂九宮格網頁互動版 (v1.08)</p>
+        <p>© 于峻的音樂九宮格網頁互動版 (v1.09)</p>
     </footer>
 
     <script>
