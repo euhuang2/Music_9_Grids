@@ -33,6 +33,23 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative;
+            z-index: 0;
+        }
+
+        /* 處理漸層與動畫的虛擬元素 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, var(--theme-color-1, var(--bg-color)), var(--theme-color-2, var(--bg-color)));
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.8s ease; /* 0.8 秒平滑漸變 */
+        }
+
+        body.detail-mode::before {
+            opacity: 1; /* 進入單一卡片時，讓漸層背景浮現 */
         }
 
         .view-section { width: 100%; max-width: 1280px; display: flex; flex-direction: column; align-items: center; }
@@ -185,6 +202,7 @@
         .card-number { font-size: 0.8rem; font-weight: 700; color: var(--accent-gold); background-color: rgba(217, 119, 6, 0.15); padding: 0.2rem 0.55rem; border-radius: 20px; white-space: nowrap; }
         .card-title { font-size: 1.05rem; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+        /* 預設高度 380px 確保載入時不過長 */
         .iframe-container {
             width: 100%;
             height: 380px;
@@ -198,6 +216,12 @@
             border: none;
         }
 
+        /* 轉場動畫設定 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         body.detail-mode header,
         body.detail-mode .premium-tip-banner {
             display: none;
@@ -206,6 +230,7 @@
         body.detail-mode .detail-header-bar,
         body.detail-mode .bottom-nav {
             display: flex;
+            animation: fadeIn 0.4s ease forwards;
         }
 
         body.detail-mode .grid-container {
@@ -223,6 +248,7 @@
             margin: 0 auto;
             border-color: var(--accent-gold);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.4s ease forwards;
         }
 
         body.detail-mode .grid-card.is-active .card-header {
@@ -237,8 +263,11 @@
             display: none;
         }
 
+        /* 進入單一宮格後，播放器高度改用 vh 自適應，減少滾動需求 */
         body.detail-mode .grid-card.is-active .iframe-container {
-            height: 680px;
+            height: 85vh; 
+            min-height: 600px;
+            max-height: 1000px;
         }
 
         footer {
@@ -301,15 +330,15 @@
 
     <script>
         const musicGrids = [
-            { id: 1, num: "GRID 01", title: "1 - 振奮激昂", playlistId: "5d38UvPsiuwEpHEKsmNVdI" },
-            { id: 2, num: "GRID 02", title: "2 - 雄偉莊嚴", playlistId: "2FzUomeuPcmzRF0XrowXLJ" },
-            { id: 3, num: "GRID 03", title: "3 - 壯烈凝重", playlistId: "6qidqEVx0KCNldfcvM9Ba0" },
-            { id: 4, num: "GRID 04", title: "4 - 活潑暢意", playlistId: "4EOtag4cS0bYD33FTBdt0i" },
-            { id: 5, num: "GRID 05", title: "5 - 中庸從容", playlistId: "4duwZFg9Zjhd1zwPeFzlN6" },
-            { id: 6, num: "GRID 06", title: "6 - 深沈濃郁", playlistId: "1t9JYd54G0ujqBugxXSd9N" },
-            { id: 7, num: "GRID 07", title: "7 - 輕鬆愉悅", playlistId: "1oc9yD41QwnNEgy4czd6TD" },
-            { id: 8, num: "GRID 08", title: "8 - 悠揚舒緩", playlistId: "12f2AeitLAxtpDosZJvILN" },
-            { id: 9, num: "GRID 09", title: "9 - 低迴沉吟", playlistId: "1q12bVnZ2KLXXCGaCmqooW" }
+            { id: 1, num: "GRID 01", title: "1 - 振奮激昂", playlistId: "5d38UvPsiuwEpHEKsmNVdI", colors: ['#450a0a', '#9a3412'] },
+            { id: 2, num: "GRID 02", title: "2 - 雄偉莊嚴", playlistId: "2FzUomeuPcmzRF0XrowXLJ", colors: ['#172554', '#78350f'] },
+            { id: 3, num: "GRID 03", title: "3 - 壯烈凝重", playlistId: "6qidqEVx0KCNldfcvM9Ba0", colors: ['#0c0a09', '#450a0a'] },
+            { id: 4, num: "GRID 04", title: "4 - 活潑暢意", playlistId: "4EOtag4cS0bYD33FTBdt0i", colors: ['#042f2e', '#0369a1'] },
+            { id: 5, num: "GRID 05", title: "5 - 中庸從容", playlistId: "4duwZFg9Zjhd1zwPeFzlN6", colors: ['#1e293b', '#334155'] },
+            { id: 6, num: "GRID 06", title: "6 - 深沈濃郁", playlistId: "1t9JYd54G0ujqBugxXSd9N", colors: ['#2e1065', '#111827'] },
+            { id: 7, num: "GRID 07", title: "7 - 輕鬆愉悅", playlistId: "1oc9yD41QwnNEgy4czd6TD", colors: ['#1e3a8a', '#0891b2'] },
+            { id: 8, num: "GRID 08", title: "8 - 悠揚舒緩", playlistId: "12f2AeitLAxtpDosZJvILN", colors: ['#312e81', '#4c1d95'] },
+            { id: 9, num: "GRID 09", title: "9 - 低迴沉吟", playlistId: "1q12bVnZ2KLXXCGaCmqooW", colors: ['#020617', '#1e293b'] }
         ];
 
         const controllers = new Map();
@@ -412,16 +441,31 @@
                 targetCard.classList.add('is-active');
             }
 
+            // 尋找對應的情緒色票，並寫入 CSS 變數中
+            const gridData = musicGrids.find(item => item.id === id);
+            if (gridData && gridData.colors) {
+                document.documentElement.style.setProperty('--theme-color-1', gridData.colors[0]);
+                document.documentElement.style.setProperty('--theme-color-2', gridData.colors[1]);
+            }
+
             document.body.classList.add('detail-mode');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // 稍微延遲滾動，讓 display:block 生效後再抓取位置
+            setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 50);
         }
 
         function showMainView() {
             document.body.classList.remove('detail-mode');
-            document.querySelectorAll('.grid-card').forEach(card => {
-                card.classList.remove('is-active');
-            });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // 配合 CSS 動畫的時間，讓視覺過渡更自然
+            setTimeout(() => {
+                document.querySelectorAll('.grid-card').forEach(card => {
+                    card.classList.remove('is-active');
+                });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 300); 
         }
     </script>
 </body>
