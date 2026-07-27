@@ -81,10 +81,10 @@
 
         .header-title p { color: var(--text-secondary); font-size: 1rem; letter-spacing: 1px; }
 
-        /* 專屬控制列（標題與九宮格之間） */
+        /* 控制列 (主標題與九宮格之間) */
         .control-bar {
             width: 100%;
-            background: rgba(30, 41, 59, 0.6);
+            background: rgba(30, 41, 59, 0.7);
             border: 1px solid var(--card-border);
             border-radius: 12px;
             padding: 0.85rem 1.25rem;
@@ -118,7 +118,6 @@
             color: #000000;
         }
 
-        /* 隨機播放啟動時的高亮狀態 */
         .shuffle-btn.is-active {
             background-color: var(--accent-gold);
             color: #000000;
@@ -135,25 +134,61 @@
         .now-playing-banner {
             display: none;
             align-items: center;
-            justify-content: space-between;
+            gap: 0.8rem;
             background: rgba(217, 119, 6, 0.15);
             border: 1px solid rgba(217, 119, 6, 0.4);
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            padding: 0.4rem 1rem;
             font-size: 0.9rem;
             color: var(--accent-gold-light);
             flex-grow: 1;
+            justify-content: space-between;
         }
 
         .now-playing-banner.is-visible {
             display: flex;
         }
 
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .nav-track-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-track-btn:hover:not(:disabled) {
+            background: var(--accent-gold);
+            color: #000000;
+            border-color: var(--accent-gold);
+        }
+
+        .nav-track-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
         .now-playing-info {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
             font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .close-shuffle-btn {
@@ -165,6 +200,7 @@
             padding: 0.2rem 0.5rem;
             border-radius: 4px;
             transition: color 0.2s;
+            white-space: nowrap;
         }
 
         .close-shuffle-btn:hover {
@@ -265,7 +301,6 @@
             min-width: 0; 
         }
 
-        /* 移除英文後，放大中文名稱字體 */
         .card-title-zh { 
             font-size: 1.3rem; 
             font-weight: 700; 
@@ -337,10 +372,20 @@
             display: inline-block;
             margin: 0 2px;
         }
+
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--card-border);
+            padding-top: 1.5rem;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
-    <div class="version-tag">v1.17</div>
+    <div class="version-tag">v1.19</div>
 
     <section class="view-section">
         <header>
@@ -362,11 +407,15 @@
             </button>
 
             <div class="now-playing-banner" id="now-playing-banner">
-                <div class="now-playing-info">
-                    <span>♫ 跨宮格隨機電台播放中 ── 正在播放：</span>
-                    <span id="now-playing-target" style="color: #ffffff;">[4 - 活潑暢意]</span>
+                <div class="player-controls">
+                    <button class="nav-track-btn" id="prev-track-btn" onclick="playPrevShuffleTrack()" title="上一首" disabled>⏮</button>
+                    <div class="now-playing-info">
+                        <span>♫ 正在播放：</span>
+                        <span id="now-playing-target" style="color: #ffffff;">-</span>
+                    </div>
+                    <button class="nav-track-btn" id="next-track-btn" onclick="playNextShuffleTrack()" title="下一首">⏭</button>
                 </div>
-                <button class="close-shuffle-btn" onclick="toggleShuffleMode(false)" title="關閉隨機播放">✕ 關閉隨機</button>
+                <button class="close-shuffle-btn" onclick="toggleShuffleMode(false)" title="關閉隨機播放">✕ 關閉</button>
             </div>
         </div>
 
@@ -385,27 +434,33 @@
         </div>
 
         <div class="premium-tip-banner">
-            <span>🎵 <strong>播放全曲提示：</strong> 未訂閱 Spotify Premium 方案者僅能預覽聆聽 30 秒。欲聆聽全曲請先至 <a href="https://open.spotify.com" target="_blank" rel="noopener noreferrer">open.spotify.com</a> 登入；若登入後仍無法全曲播放，建議直接點擊<svg class="inline-spotify-icon" viewBox="0 0 24 24"><path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>，即可至 Spotify App 上聆聽完整曲目。</span>
+            <span>🎵 <strong>播放全曲提示：</strong> 未訂閱 Spotify Premium 方案者僅能預覽聆聽 30 秒。欲聆聽全曲請先至 <a href="https://open.spotify.com" target="_blank" rel="noopener noreferrer">open.spotify.com</a> 登入；若登入後仍無法全曲播放，建議將瀏覽器設定為允許跨網站追蹤，或直接點擊<svg class="inline-spotify-icon" viewBox="0 0 24 24"><path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>，即可至 Spotify App 上聆聽完整曲目。</span>
         </div>
     </section>
 
+    <footer>
+        <p>© 于峻的音樂九宮格網頁互動版</p>
+    </footer>
+
     <script>
-        // 九宮格資料：各卡片背景色系重新調配，確保 9 個各自獨立不重複
         const musicGrids = [
-            { id: 1, titleZh: "1 - 振奮激昂", playlistId: "5d38UvPsiuwEpHEKsmNVdI", colors: ['#7c2d12', '#ea580c'] }, // 熱烈暖橘紅
-            { id: 2, titleZh: "2 - 雄偉莊嚴", playlistId: "2FzUomeuPcmzRF0XrowXLJ", colors: ['#78350f', '#d97706'] }, // 輝煌琥珀金
-            { id: 3, titleZh: "3 - 壯烈凝重", playlistId: "6qidqEVx0KCNldfcvM9Ba0", colors: ['#450a0a', '#1e1b4b'] }, // 深邃暗紅靛紫
-            { id: 4, titleZh: "4 - 活潑暢意", playlistId: "4EOtag4cS0bYD33FTBdt0i", colors: ['#065f46', '#10b981'] }, // 活力翠綠
-            { id: 5, titleZh: "5 - 中庸從容", playlistId: "4duwZFg9Zjhd1zwPeFzlN6", colors: ['#1e293b', '#475569'] }, // 穩重灰藍
-            { id: 6, titleZh: "6 - 深沈濃郁", playlistId: "1t9JYd54G0ujqBugxXSd9N", colors: ['#4c1d95', '#8b5cf6'] }, // 濃郁魅惑紫
-            { id: 7, titleZh: "7 - 輕鬆愉悅", playlistId: "1oc9yD41QwnNEgy4czd6TD", colors: ['#0284c7', '#38bdf8'] }, // 明亮天藍
-            { id: 8, titleZh: "8 - 悠揚舒緩", playlistId: "12f2AeitLAxtpDosZJvILN", colors: ['#134e4a', '#0d9488'] }, // 寧靜湖水綠
-            { id: 9, titleZh: "9 - 低迴沉吟", playlistId: "1q12bVnZ2KLXXCGaCmqooW", colors: ['#0f172a', '#1e1b4b'] }  // 夜空極暗藍
+            { id: 1, titleZh: "1 - 振奮激昂", playlistId: "5d38UvPsiuwEpHEKsmNVdI", colors: ['#7c2d12', '#ea580c'] },
+            { id: 2, titleZh: "2 - 雄偉莊嚴", playlistId: "2FzUomeuPcmzRF0XrowXLJ", colors: ['#78350f', '#d97706'] },
+            { id: 3, titleZh: "3 - 壯烈凝重", playlistId: "6qidqEVx0KCNldfcvM9Ba0", colors: ['#450a0a', '#1e1b4b'] },
+            { id: 4, titleZh: "4 - 活潑暢意", playlistId: "4EOtag4cS0bYD33FTBdt0i", colors: ['#065f46', '#10b981'] },
+            { id: 5, titleZh: "5 - 中庸從容", playlistId: "4duwZFg9Zjhd1zwPeFzlN6", colors: ['#1e293b', '#475569'] },
+            { id: 6, titleZh: "6 - 深沈濃郁", playlistId: "1t9JYd54G0ujqBugxXSd9N", colors: ['#4c1d95', '#8b5cf6'] },
+            { id: 7, titleZh: "7 - 輕鬆愉悅", playlistId: "1oc9yD41QwnNEgy4czd6TD", colors: ['#0284c7', '#38bdf8'] },
+            { id: 8, titleZh: "8 - 悠揚舒緩", playlistId: "12f2AeitLAxtpDosZJvILN", colors: ['#134e4a', '#0d9488'] },
+            { id: 9, titleZh: "9 - 低迴沉吟", playlistId: "1q12bVnZ2KLXXCGaCmqooW", colors: ['#0f172a', '#1e1b4b'] }
         ];
 
         const controllers = new Map();
         let isShuffleActive = false;
-        let currentShuffleId = null;
+        
+        // 隨機播放歷史隊列與當前索引
+        let shuffleHistory = [];
+        let historyIndex = -1;
 
         function stopAllOthers(activeId) {
             controllers.forEach((ctrl, id) => {
@@ -419,7 +474,24 @@
             });
         }
 
-        // 跨宮格隨機播放切換邏輯
+        // 播放指定索引的歷史或新宮格
+        function playGridByTarget(gridItem) {
+            const targetText = document.getElementById('now-playing-target');
+            const prevBtn = document.getElementById('prev-track-btn');
+
+            targetText.innerText = `[${gridItem.titleZh}]`;
+            
+            // 更新上一首按鈕狀態
+            prevBtn.disabled = (historyIndex <= 0);
+
+            stopAllOthers(gridItem.id);
+            const targetCtrl = controllers.get(gridItem.id);
+            if (targetCtrl) {
+                targetCtrl.play();
+            }
+        }
+
+        // 切換隨機播放總開關
         function toggleShuffleMode(forceState = null) {
             isShuffleActive = (forceState !== null) ? forceState : !isShuffleActive;
 
@@ -427,41 +499,66 @@
             const btnIcon = document.getElementById('shuffle-btn-icon');
             const btnText = document.getElementById('shuffle-btn-text');
             const banner = document.getElementById('now-playing-banner');
-            const targetText = document.getElementById('now-playing-target');
 
             if (isShuffleActive) {
-                // 隨機選擇一個宮格
-                const randomItem = musicGrids[Math.floor(Math.random() * musicGrids.length)];
-                currentShuffleId = randomItem.id;
-
                 btn.classList.add('is-active');
                 btnIcon.innerText = '⏸';
-                btnText.innerText = '隨機播放中（點擊取消）';
-
-                targetText.innerText = `[${randomItem.titleZh}]`;
+                btnText.innerText = '隨機播放中';
                 banner.classList.add('is-visible');
 
-                // 播放對應的宮格曲目
-                stopAllOthers(randomItem.id);
-                const targetCtrl = controllers.get(randomItem.id);
-                if (targetCtrl) {
-                    targetCtrl.play();
-                }
+                // 初始化播放紀錄
+                shuffleHistory = [];
+                historyIndex = -1;
+                playNextShuffleTrack();
             } else {
                 btn.classList.remove('is-active');
                 btnIcon.innerText = '🔀';
                 btnText.innerText = '跨宮格隨機播放';
                 banner.classList.remove('is-visible');
 
-                // 關閉隨機時暫停當前播放
-                if (currentShuffleId !== null) {
-                    const activeCtrl = controllers.get(currentShuffleId);
+                // 關閉隨機時，暫停所有播放
+                if (historyIndex >= 0 && shuffleHistory[historyIndex]) {
+                    const currentId = shuffleHistory[historyIndex].id;
+                    const activeCtrl = controllers.get(currentId);
                     if (activeCtrl) {
                         try { activeCtrl.pause(); } catch(e){}
                     }
-                    currentShuffleId = null;
                 }
+                shuffleHistory = [];
+                historyIndex = -1;
             }
+        }
+
+        // 點擊「下一首 ⏭」
+        function playNextShuffleTrack() {
+            if (!isShuffleActive) return;
+
+            // 如果是在歷史紀錄中間點擊「下一首」，且後面還有紀錄，則往前進一個
+            if (historyIndex < shuffleHistory.length - 1) {
+                historyIndex++;
+                playGridByTarget(shuffleHistory[historyIndex]);
+                return;
+            }
+
+            // 否則隨機抽選新宮格（儘量避開當前宮格）
+            let currentId = historyIndex >= 0 ? shuffleHistory[historyIndex].id : null;
+            let availableGrids = musicGrids.filter(g => g.id !== currentId);
+            if (availableGrids.length === 0) availableGrids = musicGrids;
+
+            const randomItem = availableGrids[Math.floor(Math.random() * availableGrids.length)];
+            
+            shuffleHistory.push(randomItem);
+            historyIndex = shuffleHistory.length - 1;
+
+            playGridByTarget(randomItem);
+        }
+
+        // 點擊「上一首 ⏮」
+        function playPrevShuffleTrack() {
+            if (!isShuffleActive || historyIndex <= 0) return;
+
+            historyIndex--;
+            playGridByTarget(shuffleHistory[historyIndex]);
         }
 
         function updateSpotifyLoginUI(isLoggedIn) {
