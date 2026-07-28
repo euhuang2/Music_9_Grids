@@ -42,7 +42,6 @@
             align-items: center;
             position: relative;
             z-index: 0;
-            scroll-behavior: smooth;
         }
 
         body::before {
@@ -81,136 +80,6 @@
         }
 
         .header-title p { color: var(--text-secondary); font-size: 1rem; letter-spacing: 1px; }
-
-        /* 浮動固定控制列 (Sticky Bar) */
-        .control-bar {
-            width: 100%;
-            position: sticky;
-            top: 1rem;
-            z-index: 100;
-            background: rgba(30, 41, 59, 0.9);
-            border: 1px solid var(--accent-gold);
-            border-radius: 12px;
-            padding: 0.85rem 1.25rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 1rem;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-        }
-
-        .shuffle-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background-color: var(--btn-bg);
-            color: var(--text-primary);
-            border: 1px solid var(--accent-gold);
-            padding: 0.6rem 1.2rem;
-            border-radius: 25px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-
-        .shuffle-btn:hover {
-            background-color: var(--accent-gold);
-            color: #000000;
-        }
-
-        .shuffle-btn.is-active {
-            background-color: var(--accent-gold);
-            color: #000000;
-            box-shadow: 0 0 15px rgba(217, 119, 6, 0.5);
-            animation: pulse-glow 2s infinite;
-        }
-
-        @keyframes pulse-glow {
-            0% { box-shadow: 0 0 10px rgba(217, 119, 6, 0.4); }
-            50% { box-shadow: 0 0 20px rgba(217, 119, 6, 0.8); }
-            100% { box-shadow: 0 0 10px rgba(217, 119, 6, 0.4); }
-        }
-
-        .now-playing-banner {
-            display: none;
-            align-items: center;
-            gap: 0.8rem;
-            background: rgba(217, 119, 6, 0.2);
-            border: 1px solid rgba(217, 119, 6, 0.5);
-            border-radius: 30px;
-            padding: 0.4rem 1rem;
-            font-size: 0.9rem;
-            color: var(--accent-gold-light);
-            flex-grow: 1;
-            justify-content: space-between;
-        }
-
-        .now-playing-banner.is-visible {
-            display: flex;
-        }
-
-        .player-controls {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-        }
-
-        .nav-track-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s ease;
-        }
-
-        .nav-track-btn:hover:not(:disabled) {
-            background: var(--accent-gold);
-            color: #000000;
-            border-color: var(--accent-gold);
-        }
-
-        .nav-track-btn:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
-        .now-playing-info {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .close-shuffle-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            cursor: pointer;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            transition: color 0.2s;
-            white-space: nowrap;
-        }
-
-        .close-shuffle-btn:hover {
-            color: #ffffff;
-        }
 
         .detail-header-bar {
             width: 100%;
@@ -284,17 +153,9 @@
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
             display: flex;
             flex-direction: column;
-        }
-
-        /* 隨機播放高亮聚焦效果 */
-        .grid-card.playing-focus {
-            border-color: var(--accent-gold);
-            box-shadow: 0 0 25px rgba(217, 119, 6, 0.6);
-            transform: scale(1.02);
-            z-index: 10;
         }
 
         .card-header {
@@ -348,9 +209,10 @@
 
         body.detail-mode .grid-container { display: block; }
         body.detail-mode .grid-card:not(.is-active) { display: none !important; }
-        body.detail-mode header, body.detail-mode .control-bar, body.detail-mode .premium-tip-banner { display: none; }
+        body.detail-mode header, body.detail-mode .premium-tip-banner { display: none; }
         body.detail-mode .detail-header-bar, body.detail-mode .bottom-nav { display: flex; }
 
+        /* 提示區域背景與高對比白字 */
         .premium-tip-banner {
             width: 100%;
             background-color: rgba(30, 41, 59, 0.95);
@@ -371,8 +233,11 @@
             transition: color 0.2s ease;
         }
 
-        .premium-tip-banner a:hover { color: #ffffff; }
+        .premium-tip-banner a:hover {
+            color: #ffffff;
+        }
 
+        /* 白色 Spotify 圖示 */
         .inline-spotify-icon {
             width: 16px;
             height: 16px;
@@ -394,7 +259,7 @@
     </style>
 </head>
 <body>
-    <div class="version-tag">v1.22</div>
+    <div class="version-tag">v1.18</div>
 
     <section class="view-section">
         <header>
@@ -407,26 +272,6 @@
                 <span class="spotify-btn-text">登入 Spotify</span>
             </a>
         </header>
-
-        <!-- 吸頂控制列 (Sticky Bar) -->
-        <div class="control-bar">
-            <button class="shuffle-btn" id="shuffle-btn" onclick="toggleShuffleMode()">
-                <span id="shuffle-btn-icon">🔀</span>
-                <span id="shuffle-btn-text">跨宮格隨機播放</span>
-            </button>
-
-            <div class="now-playing-banner" id="now-playing-banner">
-                <div class="player-controls">
-                    <button class="nav-track-btn" id="prev-track-btn" onclick="playPrevShuffleTrack()" title="上一首" disabled>⏮</button>
-                    <div class="now-playing-info">
-                        <span>♫ 正在播放：</span>
-                        <span id="now-playing-target" style="color: #ffffff;">-</span>
-                    </div>
-                    <button class="nav-track-btn" id="next-track-btn" onclick="playNextShuffleTrack()" title="下一首">⏭</button>
-                </div>
-                <button class="close-shuffle-btn" onclick="toggleShuffleMode(false)" title="關閉隨機播放">✕ 關閉</button>
-            </div>
-        </div>
 
         <div class="detail-header-bar">
             <button class="back-btn" onclick="showMainView()"><span>← 回到九宮格</span></button>
@@ -453,156 +298,29 @@
 
     <script>
         const musicGrids = [
-            { id: 1, titleZh: "1 - 振奮激昂", playlistId: "5d38UvPsiuwEpHEKsmNVdI", tracks: ["1E2S29acP2A21N3W6fC2F7", "0VjIj93B9A9A2E1C9aJkX2", "2V846T1iYQ9yV6Mv8E3EaE"], colors: ['#7c2d12', '#ea580c'] },
-            { id: 2, titleZh: "2 - 雄偉莊嚴", playlistId: "2FzUomeuPcmzRF0XrowXLJ", tracks: ["1S1g20J3D3E022g7Yl0Q19", "5Q0E14M0oGZ04G7L3E0aY0", "0a2K3G1B0C4D5E6F7G8H9I"], colors: ['#78350f', '#d97706'] },
-            { id: 3, titleZh: "3 - 壯烈凝重", playlistId: "6qidqEVx0KCNldfcvM9Ba0", tracks: ["0G3E14M0oGZ04G7L3E0aY0", "1C3E14M0oGZ04G7L3E0aY0", "2D3E14M0oGZ04G7L3E0aY0"], colors: ['#450a0a', '#1e1b4b'] },
-            { id: 4, titleZh: "4 - 活潑暢意", playlistId: "4EOtag4cS0bYD33FTBdt0i", tracks: ["3z8hA3S2s04X1a7L0pQ1R2", "4y7G1B0C4D5E6F7G8H9I0J", "5x6H2C0D5E6F7G8H9I0J1K"], colors: ['#065f46', '#10b981'] },
-            { id: 5, titleZh: "5 - 中庸從容", playlistId: "4duwZFg9Zjhd1zwPeFzlN6", tracks: ["6w5I3D0E6F7G8H9I0J1K2L", "7v4J4E0F7G8H9I0J1K2L3M", "8u3K5F0G8H9I0J1K2L3M4N"], colors: ['#1e293b', '#475569'] },
-            { id: 6, titleZh: "6 - 深沈濃郁", playlistId: "1t9JYd54G0ujqBugxXSd9N", tracks: ["0VjIj93B9A9A2E1C9aJkX2", "1E2S29acP2A21N3W6fC2F7", "2V846T1iYQ9yV6Mv8E3EaE"], colors: ['#4c1d95', '#8b5cf6'] },
-            { id: 7, titleZh: "7 - 輕鬆愉悅", playlistId: "1oc9yD41QwnNEgy4czd6TD", tracks: ["3z8hA3S2s04X1a7L0pQ1R2", "1S1g20J3D3E022g7Yl0Q19", "0G3E14M0oGZ04G7L3E0aY0"], colors: ['#0284c7', '#38bdf8'] },
-            { id: 8, titleZh: "8 - 悠揚舒緩", playlistId: "12f2AeitLAxtpDosZJvILN", tracks: ["1E2S29acP2A21N3W6fC2F7", "3z8hA3S2s04X1a7L0pQ1R2", "0VjIj93B9A9A2E1C9aJkX2"], colors: ['#134e4a', '#0d9488'] },
-            { id: 9, titleZh: "9 - 低迴沉吟", playlistId: "1q12bVnZ2KLXXCGaCmqooW", tracks: ["1S1g20J3D3E022g7Yl0Q19", "0G3E14M0oGZ04G7L3E0aY0", "1E2S29acP2A21N3W6fC2F7"], colors: ['#0f172a', '#1e1b4b'] }
+            { id: 1, titleZh: "1 - 振奮激昂", playlistId: "5d38UvPsiuwEpHEKsmNVdI", colors: ['#7c2d12', '#ea580c'] },
+            { id: 2, titleZh: "2 - 雄偉莊嚴", playlistId: "2FzUomeuPcmzRF0XrowXLJ", colors: ['#78350f', '#d97706'] },
+            { id: 3, titleZh: "3 - 壯烈凝重", playlistId: "6qidqEVx0KCNldfcvM9Ba0", colors: ['#450a0a', '#1e1b4b'] },
+            { id: 4, titleZh: "4 - 活潑暢意", playlistId: "4EOtag4cS0bYD33FTBdt0i", colors: ['#065f46', '#10b981'] },
+            { id: 5, titleZh: "5 - 中庸從容", playlistId: "4duwZFg9Zjhd1zwPeFzlN6", colors: ['#1e293b', '#475569'] },
+            { id: 6, titleZh: "6 - 深沈濃郁", playlistId: "1t9JYd54G0ujqBugxXSd9N", colors: ['#4c1d95', '#8b5cf6'] },
+            { id: 7, titleZh: "7 - 輕鬆愉悅", playlistId: "1oc9yD41QwnNEgy4czd6TD", colors: ['#0284c7', '#38bdf8'] },
+            { id: 8, titleZh: "8 - 悠揚舒緩", playlistId: "12f2AeitLAxtpDosZJvILN", colors: ['#134e4a', '#0d9488'] },
+            { id: 9, titleZh: "9 - 低迴沉吟", playlistId: "1q12bVnZ2KLXXCGaCmqooW", colors: ['#0f172a', '#1e1b4b'] }
         ];
 
         const controllers = new Map();
-        let isShuffleActive = false;
-        let shuffleTimer = null;
-        let shuffleHistory = [];
-        let historyIndex = -1;
 
         function stopAllOthers(activeId) {
             controllers.forEach((ctrl, id) => {
                 if (id !== activeId && ctrl) {
-                    try { ctrl.pause(); } catch (err) {}
-                }
-            });
-        }
-
-        function clearShuffleTimer() {
-            if (shuffleTimer) {
-                clearTimeout(shuffleTimer);
-                shuffleTimer = null;
-            }
-        }
-
-        function start29_5sTimer() {
-            clearShuffleTimer();
-            const isLoggedIn = localStorage.getItem('spotify_is_logged_in') === 'true';
-            
-            if (isShuffleActive && !isLoggedIn) {
-                shuffleTimer = setTimeout(() => {
-                    playNextShuffleTrack();
-                }, 29500);
-            }
-        }
-
-        // 自動捲動視窗至目標宮格正中央並亮燈聚焦
-        function scrollToGridCard(gridId) {
-            document.querySelectorAll('.grid-card').forEach(card => card.classList.remove('playing-focus'));
-            
-            const cardEl = document.querySelector(`.grid-card[data-id="${gridId}"]`);
-            if (cardEl) {
-                cardEl.classList.add('playing-focus');
-                cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
-
-        function playGridTarget(itemData) {
-            const { grid, trackId } = itemData;
-            const targetText = document.getElementById('now-playing-target');
-            const prevBtn = document.getElementById('prev-track-btn');
-            const isLoggedIn = localStorage.getItem('spotify_is_logged_in') === 'true';
-
-            targetText.innerText = `[${grid.titleZh}]${!isLoggedIn ? ' (預覽 30 秒自動切換)' : ''}`;
-            prevBtn.disabled = (historyIndex <= 0);
-
-            stopAllOthers(grid.id);
-
-            // 視覺移動與高亮
-            scrollToGridCard(grid.id);
-
-            const targetCtrl = controllers.get(grid.id);
-            if (targetCtrl) {
-                if (!isLoggedIn && trackId) {
-                    targetCtrl.loadUri(`spotify:track:${trackId}`);
-                }
-                targetCtrl.play();
-            }
-
-            start29_5sTimer();
-        }
-
-        function toggleShuffleMode(forceState = null) {
-            isShuffleActive = (forceState !== null) ? forceState : !isShuffleActive;
-
-            const btn = document.getElementById('shuffle-btn');
-            const btnIcon = document.getElementById('shuffle-btn-icon');
-            const btnText = document.getElementById('shuffle-btn-text');
-            const banner = document.getElementById('now-playing-banner');
-
-            if (isShuffleActive) {
-                btn.classList.add('is-active');
-                btnIcon.innerText = '⏸';
-                btnText.innerText = '隨機播放中';
-                banner.classList.add('is-visible');
-
-                shuffleHistory = [];
-                historyIndex = -1;
-                playNextShuffleTrack();
-            } else {
-                btn.classList.remove('is-active');
-                btnIcon.innerText = '🔀';
-                btnText.innerText = '跨宮格隨機播放';
-                banner.classList.remove('is-visible');
-
-                clearShuffleTimer();
-                document.querySelectorAll('.grid-card').forEach(card => card.classList.remove('playing-focus'));
-
-                if (historyIndex >= 0 && shuffleHistory[historyIndex]) {
-                    const currentId = shuffleHistory[historyIndex].grid.id;
-                    const activeCtrl = controllers.get(currentId);
-                    if (activeCtrl) {
-                        try { activeCtrl.pause(); } catch(e){}
+                    try {
+                        ctrl.pause();
+                    } catch (err) {
+                        console.log('Pause error:', err);
                     }
                 }
-                shuffleHistory = [];
-                historyIndex = -1;
-            }
-        }
-
-        function playNextShuffleTrack() {
-            if (!isShuffleActive) return;
-            clearShuffleTimer();
-
-            if (historyIndex < shuffleHistory.length - 1) {
-                historyIndex++;
-                playGridTarget(shuffleHistory[historyIndex]);
-                return;
-            }
-
-            let currentGridId = historyIndex >= 0 ? shuffleHistory[historyIndex].grid.id : null;
-            let availableGrids = musicGrids.filter(g => g.id !== currentGridId);
-            if (availableGrids.length === 0) availableGrids = musicGrids;
-
-            const randomGrid = availableGrids[Math.floor(Math.random() * availableGrids.length)];
-            let randomTrackId = null;
-            if (randomGrid.tracks && randomGrid.tracks.length > 0) {
-                randomTrackId = randomGrid.tracks[Math.floor(Math.random() * randomGrid.tracks.length)];
-            }
-
-            const historyItem = { grid: randomGrid, trackId: randomTrackId };
-            shuffleHistory.push(historyItem);
-            historyIndex = shuffleHistory.length - 1;
-
-            playGridTarget(historyItem);
-        }
-
-        function playPrevShuffleTrack() {
-            if (!isShuffleActive || historyIndex <= 0) return;
-            clearShuffleTimer();
-
-            historyIndex--;
-            playGridTarget(shuffleHistory[historyIndex]);
+            });
         }
 
         function updateSpotifyLoginUI(isLoggedIn) {
