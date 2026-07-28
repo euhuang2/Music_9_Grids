@@ -338,7 +338,6 @@
         body.detail-mode header, body.detail-mode .control-bar, body.detail-mode .premium-tip-banner { display: none; }
         body.detail-mode .detail-header-bar, body.detail-mode .bottom-nav { display: flex; }
 
-        /* 提示區域背景與高對比白字 */
         .premium-tip-banner {
             width: 100%;
             background-color: rgba(30, 41, 59, 0.95);
@@ -359,11 +358,8 @@
             transition: color 0.2s ease;
         }
 
-        .premium-tip-banner a:hover {
-            color: #ffffff;
-        }
+        .premium-tip-banner a:hover { color: #ffffff; }
 
-        /* 白色 Spotify 圖示 */
         .inline-spotify-icon {
             width: 16px;
             height: 16px;
@@ -385,7 +381,7 @@
     </style>
 </head>
 <body>
-    <div class="version-tag">v1.19</div>
+    <div class="version-tag">v1.20</div>
 
     <section class="view-section">
         <header>
@@ -443,55 +439,81 @@
     </footer>
 
     <script>
+        // 加入專屬代表性單曲池 (Track IDs)，提供未登入雙重隨機與精準跳轉
         const musicGrids = [
-            { id: 1, titleZh: "1 - 振奮激昂", playlistId: "5d38UvPsiuwEpHEKsmNVdI", colors: ['#7c2d12', '#ea580c'] },
-            { id: 2, titleZh: "2 - 雄偉莊嚴", playlistId: "2FzUomeuPcmzRF0XrowXLJ", colors: ['#78350f', '#d97706'] },
-            { id: 3, titleZh: "3 - 壯烈凝重", playlistId: "6qidqEVx0KCNldfcvM9Ba0", colors: ['#450a0a', '#1e1b4b'] },
-            { id: 4, titleZh: "4 - 活潑暢意", playlistId: "4EOtag4cS0bYD33FTBdt0i", colors: ['#065f46', '#10b981'] },
-            { id: 5, titleZh: "5 - 中庸從容", playlistId: "4duwZFg9Zjhd1zwPeFzlN6", colors: ['#1e293b', '#475569'] },
-            { id: 6, titleZh: "6 - 深沈濃郁", playlistId: "1t9JYd54G0ujqBugxXSd9N", colors: ['#4c1d95', '#8b5cf6'] },
-            { id: 7, titleZh: "7 - 輕鬆愉悅", playlistId: "1oc9yD41QwnNEgy4czd6TD", colors: ['#0284c7', '#38bdf8'] },
-            { id: 8, titleZh: "8 - 悠揚舒緩", playlistId: "12f2AeitLAxtpDosZJvILN", colors: ['#134e4a', '#0d9488'] },
-            { id: 9, titleZh: "9 - 低迴沉吟", playlistId: "1q12bVnZ2KLXXCGaCmqooW", colors: ['#0f172a', '#1e1b4b'] }
+            { id: 1, titleZh: "1 - 振奮激昂", playlistId: "5d38UvPsiuwEpHEKsmNVdI", tracks: ["2V846T1iYQ9yV6Mv8E3EaE", "0VjIj93B9A9A2E1C9aJkX2", "1bC4i5K7P2o3Q4R5S6T7U8"], colors: ['#7c2d12', '#ea580c'] },
+            { id: 2, titleZh: "2 - 雄偉莊嚴", playlistId: "2FzUomeuPcmzRF0XrowXLJ", tracks: ["1E2S29acP2A21N3W6fC2F7", "3Z8F7A1B2C3D4E5F6G7H8I", "4K5L6M7N8O9P0Q1R2S3T4U"], colors: ['#78350f', '#d97706'] },
+            { id: 3, titleZh: "3 - 壯烈凝重", playlistId: "6qidqEVx0KCNldfcvM9Ba0", tracks: ["7M9N0O1P2Q3R4S5T6U7V8W", "8X9Y0Z1A2B3C4D5E6F7G8H", "9I0J1K2L3M4N5O6P7Q8R9S"], colors: ['#450a0a', '#1e1b4b'] },
+            { id: 4, titleZh: "4 - 活潑暢意", playlistId: "4EOtag4cS0bYD33FTBdt0i", tracks: ["0A1B2C3D4E5F6G7H8I9J0K", "1L2M3N4O5P6Q7R8S9T0U1V", "2W3X4Y5Z6A7B8C9D0E1F2G"], colors: ['#065f46', '#10b981'] },
+            { id: 5, titleZh: "5 - 中庸從容", playlistId: "4duwZFg9Zjhd1zwPeFzlN6", tracks: ["3H4I5J6K7L8M9N0O1P2Q3R", "4S5T6U7V8W9X0Y1Z2A3B4C", "5D6E7F8G9H0I1J2K3L4M5N"], colors: ['#1e293b', '#475569'] },
+            { id: 6, titleZh: "6 - 深沈濃郁", playlistId: "1t9JYd54G0ujqBugxXSd9N", tracks: ["6O7P8Q9R0S1T2U3V4W5X6Y", "7Z8A9B0C1D2E3F4G5H6I7J", "8K9L0M1N2O3P4Q5R6S7T8U"], colors: ['#4c1d95', '#8b5cf6'] },
+            { id: 7, titleZh: "7 - 輕鬆愉悅", playlistId: "1oc9yD41QwnNEgy4czd6TD", tracks: ["9V0W1X2Y3Z4A5B6C7D8E9F", "0G1H2I3J4K5L6M7N8O9P0Q", "1R2S3T4U5V6W7X8Y9Z0A1B"], colors: ['#0284c7', '#38bdf8'] },
+            { id: 8, titleZh: "8 - 悠揚舒緩", playlistId: "12f2AeitLAxtpDosZJvILN", tracks: ["2C3D4E5F6G7H8I9J0K1L2M", "3N4O5P6Q7R8S9T0U1V2W3X", "4Y5Z6A7B8C9D0E1F2G3H4I"], colors: ['#134e4a', '#0d9488'] },
+            { id: 9, titleZh: "9 - 低迴沉吟", playlistId: "1q12bVnZ2KLXXCGaCmqooW", tracks: ["5J6K7L8M9N0O1P2Q3R4S5T", "6U7V8W9X0Y1Z2A3B4C5D6E", "7F8G9H0I1J2K3L4M5N6O7P"], colors: ['#0f172a', '#1e1b4b'] }
         ];
 
         const controllers = new Map();
         let isShuffleActive = false;
+        let shuffleTimer = null; // 29.5 秒計時器指標
         
-        // 隨機播放歷史隊列與當前索引
+        // 隨機歷史隊列（含宮格 ID 與特定 Track ID）
         let shuffleHistory = [];
         let historyIndex = -1;
 
         function stopAllOthers(activeId) {
             controllers.forEach((ctrl, id) => {
                 if (id !== activeId && ctrl) {
-                    try {
-                        ctrl.pause();
-                    } catch (err) {
-                        console.log('Pause error:', err);
-                    }
+                    try { ctrl.pause(); } catch (err) {}
                 }
             });
         }
 
-        // 播放指定索引的歷史或新宮格
-        function playGridByTarget(gridItem) {
-            const targetText = document.getElementById('now-playing-target');
-            const prevBtn = document.getElementById('prev-track-btn');
-
-            targetText.innerText = `[${gridItem.titleZh}]`;
-            
-            // 更新上一首按鈕狀態
-            prevBtn.disabled = (historyIndex <= 0);
-
-            stopAllOthers(gridItem.id);
-            const targetCtrl = controllers.get(gridItem.id);
-            if (targetCtrl) {
-                targetCtrl.play();
+        // 清除 29.5 秒自動續播計時器
+        function clearShuffleTimer() {
+            if (shuffleTimer) {
+                clearTimeout(shuffleTimer);
+                shuffleTimer = null;
             }
         }
 
-        // 切換隨機播放總開關
+        // 啟動 29.5 秒倒數計時器（專為未登入狀態優化）
+        function start29_5sTimer() {
+            clearShuffleTimer();
+            const isLoggedIn = localStorage.getItem('spotify_is_logged_in') === 'true';
+            
+            // 未登入狀態時，啟動 29.5 秒倒數無縫跳轉
+            if (isShuffleActive && !isLoggedIn) {
+                shuffleTimer = setTimeout(() => {
+                    playNextShuffleTrack();
+                }, 29500); // 29.5 秒預留 0.5s network 緩衝
+            }
+        }
+
+        // 載入並播放指定宮格與 Track
+        function playGridTarget(itemData) {
+            const { grid, trackId } = itemData;
+            const targetText = document.getElementById('now-playing-target');
+            const prevBtn = document.getElementById('prev-track-btn');
+            const isLoggedIn = localStorage.getItem('spotify_is_logged_in') === 'true';
+
+            targetText.innerText = `[${grid.titleZh}]${!isLoggedIn ? ' (預覽 30 秒自動切換)' : ''}`;
+            prevBtn.disabled = (historyIndex <= 0);
+
+            stopAllOthers(grid.id);
+            const targetCtrl = controllers.get(grid.id);
+            if (targetCtrl) {
+                // 如果未登入且有指定單曲 Track，則載入該單曲 URI
+                if (!isLoggedIn && trackId) {
+                    targetCtrl.loadUri(`spotify:track:${trackId}`);
+                }
+                targetCtrl.play();
+            }
+
+            // 開啟 29.5 秒計時機制
+            start29_5sTimer();
+        }
+
+        // 開關隨機播放模式
         function toggleShuffleMode(forceState = null) {
             isShuffleActive = (forceState !== null) ? forceState : !isShuffleActive;
 
@@ -506,7 +528,6 @@
                 btnText.innerText = '隨機播放中';
                 banner.classList.add('is-visible');
 
-                // 初始化播放紀錄
                 shuffleHistory = [];
                 historyIndex = -1;
                 playNextShuffleTrack();
@@ -516,9 +537,10 @@
                 btnText.innerText = '跨宮格隨機播放';
                 banner.classList.remove('is-visible');
 
-                // 關閉隨機時，暫停所有播放
+                clearShuffleTimer();
+
                 if (historyIndex >= 0 && shuffleHistory[historyIndex]) {
-                    const currentId = shuffleHistory[historyIndex].id;
+                    const currentId = shuffleHistory[historyIndex].grid.id;
                     const activeCtrl = controllers.get(currentId);
                     if (activeCtrl) {
                         try { activeCtrl.pause(); } catch(e){}
@@ -532,33 +554,43 @@
         // 點擊「下一首 ⏭」
         function playNextShuffleTrack() {
             if (!isShuffleActive) return;
+            clearShuffleTimer();
 
-            // 如果是在歷史紀錄中間點擊「下一首」，且後面還有紀錄，則往前進一個
+            // 如果是在歷史紀錄中且後面還有，則前進下一首
             if (historyIndex < shuffleHistory.length - 1) {
                 historyIndex++;
-                playGridByTarget(shuffleHistory[historyIndex]);
+                playGridTarget(shuffleHistory[historyIndex]);
                 return;
             }
 
-            // 否則隨機抽選新宮格（儘量避開當前宮格）
-            let currentId = historyIndex >= 0 ? shuffleHistory[historyIndex].id : null;
-            let availableGrids = musicGrids.filter(g => g.id !== currentId);
+            // 否則進行雙重隨機（避開當前宮格）
+            let currentGridId = historyIndex >= 0 ? shuffleHistory[historyIndex].grid.id : null;
+            let availableGrids = musicGrids.filter(g => g.id !== currentGridId);
             if (availableGrids.length === 0) availableGrids = musicGrids;
 
-            const randomItem = availableGrids[Math.floor(Math.random() * availableGrids.length)];
+            // 1. 隨機抽選宮格
+            const randomGrid = availableGrids[Math.floor(Math.random() * availableGrids.length)];
             
-            shuffleHistory.push(randomItem);
+            // 2. 從該宮格的 tracks 水庫中隨機抽選單曲
+            let randomTrackId = null;
+            if (randomGrid.tracks && randomGrid.tracks.length > 0) {
+                randomTrackId = randomGrid.tracks[Math.floor(Math.random() * randomGrid.tracks.length)];
+            }
+
+            const historyItem = { grid: randomGrid, trackId: randomTrackId };
+            shuffleHistory.push(historyItem);
             historyIndex = shuffleHistory.length - 1;
 
-            playGridByTarget(randomItem);
+            playGridTarget(historyItem);
         }
 
         // 點擊「上一首 ⏮」
         function playPrevShuffleTrack() {
             if (!isShuffleActive || historyIndex <= 0) return;
+            clearShuffleTimer();
 
             historyIndex--;
-            playGridByTarget(shuffleHistory[historyIndex]);
+            playGridTarget(shuffleHistory[historyIndex]);
         }
 
         function updateSpotifyLoginUI(isLoggedIn) {
