@@ -88,7 +88,6 @@
 
         .header-title p { color: var(--text-secondary); font-size: 1rem; letter-spacing: 1px; }
 
-        /* 說明按鈕 */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -112,7 +111,7 @@
             background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
         }
 
-        /* 專屬控制列 (主標題與九宮格之間) */
+        /* 專屬控制列 */
         .control-bar {
             width: 100%;
             background: rgba(30, 41, 59, 0.7);
@@ -176,15 +175,9 @@
             justify-content: space-between;
         }
 
-        .now-playing-banner.is-visible {
-            display: flex;
-        }
+        .now-playing-banner.is-visible { display: flex; }
 
-        .player-controls {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-        }
+        .player-controls { display: flex; align-items: center; gap: 0.6rem; }
 
         .nav-track-btn {
             background: rgba(255, 255, 255, 0.1);
@@ -207,10 +200,7 @@
             border-color: var(--accent-gold);
         }
 
-        .nav-track-btn:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
+        .nav-track-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
         .now-playing-info {
             display: flex;
@@ -234,9 +224,7 @@
             white-space: nowrap;
         }
 
-        .close-shuffle-btn:hover {
-            color: #ffffff;
-        }
+        .close-shuffle-btn:hover { color: #ffffff; }
 
         .detail-header-bar {
             width: 100%;
@@ -290,7 +278,6 @@
 
         .grid-container { display: grid; gap: 1.5rem; width: 100%; }
 
-        /* 寬螢幕自定義排列 (左789 中456 右123) */
         @media (min-width: 768px) {
             .grid-container { grid-template-columns: repeat(3, 1fr); }
             .grid-card[data-id="7"] { order: 1; }
@@ -412,7 +399,7 @@
     </style>
 </head>
 <body>
-    <div class="version-tag">v1.25</div>
+    <div class="version-tag">v1.27</div>
 
     <section class="view-section">
         <header>
@@ -431,7 +418,6 @@
             </a>
         </header>
 
-        <!-- 專屬控制列（主標題與九宮格之間） -->
         <div class="control-bar">
             <button class="shuffle-btn" id="shuffle-btn" onclick="toggleShuffleMode()">
                 <span id="shuffle-btn-icon">🔀</span>
@@ -475,114 +461,19 @@
     </footer>
 
     <script>
-        // 設定各宮格資料與播放清單中的單曲 URIs (確保能夠精確切換不重複曲目)
         const musicGrids = [
-            { 
-                id: 1, 
-                titleZh: "1 - 振奮激昂", 
-                playlistId: "5d38UvPsiuwEpHEKsmNVdI", 
-                colors: ['#7c2d12', '#ea580c'],
-                tracks: [
-                    "spotify:track:17I5528M9XyN932M7p6a6O",
-                    "spotify:track:2dpa321S6M85O9bL3S2Z3o",
-                    "spotify:track:0VjIj932x6I3d5k2R9L3P1"
-                ]
-            },
-            { 
-                id: 2, 
-                titleZh: "2 - 雄偉莊嚴", 
-                playlistId: "2FzUomeuPcmzRF0XrowXLJ", 
-                colors: ['#78350f', '#d97706'],
-                tracks: [
-                    "spotify:track:59R9m4fA1pD0v3R6K4X2Y1",
-                    "spotify:track:1r888126zK3J5k3L8M7N1o",
-                    "spotify:track:3uP91285M9XyN2R2x6I8k3"
-                ] 
-            },
-            { 
-                id: 3, 
-                titleZh: "3 - 壯烈凝重", 
-                playlistId: "6qidqEVx0KCNldfcvM9Ba0", 
-                colors: ['#450a0a', '#1e1b4b'],
-                tracks: [
-                    "spotify:track:3zB1285M9XyN932M7p6a6O",
-                    "spotify:track:4c888126zK3J5k3L8M7N1o",
-                    "spotify:track:1v991285M9XyN2R2x6I8k3"
-                ] 
-            },
-            { 
-                id: 4, 
-                titleZh: "4 - 活潑暢意", 
-                playlistId: "4EOtag4cS0bYD33FTBdt0i", 
-                colors: ['#065f46', '#10b981'],
-                tracks: [
-                    "spotify:track:60neE3rF1RInD00A52XhI4",
-                    "spotify:track:3Q91285M9XyN932M7p6a6O",
-                    "spotify:track:5x888126zK3J5k3L8M7N1o"
-                ] 
-            },
-            { 
-                id: 5, 
-                titleZh: "5 - 優雅從容", // 已更新名稱
-                playlistId: "4duwZFg9Zjhd1zwPeFzlN6", 
-                colors: ['#1e293b', '#475569'],
-                tracks: [
-                    "spotify:track:27p91285M9XyN932M7p6a6O",
-                    "spotify:track:1x888126zK3J5k3L8M7N1o",
-                    "spotify:track:6z991285M9XyN2R2x6I8k3"
-                ] 
-            },
-            { 
-                id: 6, 
-                titleZh: "6 - 深沈濃郁", 
-                playlistId: "1t9JYd54G0ujqBugxXSd9N", 
-                colors: ['#4c1d95', '#8b5cf6'],
-                tracks: [
-                    "spotify:track:4p991285M9XyN932M7p6a6O",
-                    "spotify:track:2y888126zK3J5k3L8M7N1o",
-                    "spotify:track:0a991285M9XyN2R2x6I8k3"
-                ] 
-            },
-            { 
-                id: 7, 
-                titleZh: "7 - 輕鬆愉悅", 
-                playlistId: "1oc9yD41QwnNEgy4czd6TD", 
-                colors: ['#0284c7', '#38bdf8'],
-                tracks: [
-                    "spotify:track:0o991285M9XyN932M7p6a6O",
-                    "spotify:track:3z888126zK3J5k3L8M7N1o",
-                    "spotify:track:1b991285M9XyN2R2x6I8k3"
-                ] 
-            },
-            { 
-                id: 8, 
-                titleZh: "8 - 悠揚舒緩", 
-                playlistId: "12f2AeitLAxtpDosZJvILN", 
-                colors: ['#134e4a', '#0d9488'],
-                tracks: [
-                    "spotify:track:5c991285M9XyN932M7p6a6O",
-                    "spotify:track:4a888126zK3J5k3L8M7N1o",
-                    "spotify:track:2d991285M9XyN2R2x6I8k3"
-                ] 
-            },
-            { 
-                id: 9, 
-                titleZh: "9 - 低迴沉吟", 
-                playlistId: "1q12bVnZ2KLXXCGaCmqooW", 
-                colors: ['#0f172a', '#1e1b4b'],
-                tracks: [
-                    "spotify:track:6e991285M9XyN932M7p6a6O",
-                    "spotify:track:5b888126zK3J5k3L8M7N1o",
-                    "spotify:track:3f991285M9XyN2R2x6I8k3"
-                ] 
-            }
+            { id: 1, titleZh: "1 - 振奮激昂", playlistId: "5d38UvPsiuwEpHEKsmNVdI", colors: ['#7c2d12', '#ea580c'] },
+            { id: 2, titleZh: "2 - 雄偉莊嚴", playlistId: "2FzUomeuPcmzRF0XrowXLJ", colors: ['#78350f', '#d97706'] },
+            { id: 3, titleZh: "3 - 壯烈凝重", playlistId: "6qidqEVx0KCNldfcvM9Ba0", colors: ['#450a0a', '#1e1b4b'] },
+            { id: 4, titleZh: "4 - 活潑暢意", playlistId: "4EOtag4cS0bYD33FTBdt0i", colors: ['#065f46', '#10b981'] },
+            { id: 5, titleZh: "5 - 優雅從容", playlistId: "4duwZFg9Zjhd1zwPeFzlN6", colors: ['#1e293b', '#475569'] },
+            { id: 6, titleZh: "6 - 深沈濃郁", playlistId: "1t9JYd54G0ujqBugxXSd9N", colors: ['#4c1d95', '#8b5cf6'] },
+            { id: 7, titleZh: "7 - 輕鬆愉悅", playlistId: "1oc9yD41QwnNEgy4czd6TD", colors: ['#0284c7', '#38bdf8'] },
+            { id: 8, titleZh: "8 - 悠揚舒緩", playlistId: "12f2AeitLAxtpDosZJvILN", colors: ['#134e4a', '#0d9488'] },
+            { id: 9, titleZh: "9 - 靜謐沉吟", playlistId: "1q12bVnZ2KLXXCGaCmqooW", colors: ['#0f172a', '#1e1b4b'] } // 已更新名稱
         ];
 
         const controllers = new Map();
-        // 紀錄各個宮格當前播放至第幾首曲目 (Track Index)
-        const gridTrackPointers = new Map();
-        musicGrids.forEach(g => gridTrackPointers.set(g.id, 0));
-
         let isShuffleActive = false;
         let shuffleHistory = [];
         let historyIndex = -1;
@@ -595,27 +486,24 @@
             });
         }
 
-        // 核心換歌邏輯：使用精確載入 URI 的方式解決 Spotify 預設永遠回第一首的問題
-        function playGridTarget(item) {
+        function playGridTarget(grid) {
             const targetText = document.getElementById('now-playing-target');
             const prevBtn = document.getElementById('prev-track-btn');
 
-            targetText.innerText = item.grid.titleZh;
+            targetText.innerText = grid.titleZh;
             prevBtn.disabled = (historyIndex <= 0);
 
-            stopAllOthers(item.grid.id);
-            const targetCtrl = controllers.get(item.grid.id);
+            stopAllOthers(grid.id);
+            const targetCtrl = controllers.get(grid.id);
 
             if (targetCtrl) {
-                // 如果指定了具體的 trackUri，使用 loadUri 強制換歌，解決跳轉失敗的問題
-                if (item.trackUri) {
-                    try {
-                        targetCtrl.loadUri(item.trackUri);
-                    } catch(e) {
-                        try { targetCtrl.play(); } catch(err){}
-                    }
-                } else {
-                    try { targetCtrl.play(); } catch(e) {}
+                try {
+                    targetCtrl.loadUri(`spotify:playlist:${grid.playlistId}`);
+                    setTimeout(() => {
+                        try { targetCtrl.play(); } catch(e){}
+                    }, 300);
+                } catch (e) {
+                    try { targetCtrl.play(); } catch(err){}
                 }
             }
         }
@@ -636,8 +524,6 @@
 
                 shuffleHistory = [];
                 historyIndex = -1;
-                // 重置各宮格指標
-                musicGrids.forEach(g => gridTrackPointers.set(g.id, 0));
 
                 playNextShuffleTrack();
             } else {
@@ -647,8 +533,8 @@
                 banner.classList.remove('is-visible');
 
                 if (historyIndex >= 0 && shuffleHistory[historyIndex]) {
-                    const currentId = shuffleHistory[historyIndex].grid.id;
-                    const activeCtrl = controllers.get(currentId);
+                    const currentGrid = shuffleHistory[historyIndex];
+                    const activeCtrl = controllers.get(currentGrid.id);
                     if (activeCtrl) {
                         try { activeCtrl.pause(); } catch(e){}
                     }
@@ -661,37 +547,21 @@
         function playNextShuffleTrack() {
             if (!isShuffleActive) return;
 
-            // 歷史回溯控制
             if (historyIndex < shuffleHistory.length - 1) {
                 historyIndex++;
                 playGridTarget(shuffleHistory[historyIndex]);
                 return;
             }
 
-            // 隨機選擇下一個宮格 (避開當前播放宮格)
-            let currentGridId = historyIndex >= 0 ? shuffleHistory[historyIndex].grid.id : null;
+            let currentGridId = historyIndex >= 0 ? shuffleHistory[historyIndex].id : null;
             let availableGrids = musicGrids.filter(g => g.id !== currentGridId);
             
             const randomGrid = availableGrids[Math.floor(Math.random() * availableGrids.length)];
-            
-            // 計算該宮格應取的曲目序列，確保每次都是全新歌曲
-            let currentTrackPointer = gridTrackPointers.get(randomGrid.id) || 0;
-            let selectedTrackUri = null;
 
-            if (randomGrid.tracks && randomGrid.tracks.length > 0) {
-                selectedTrackUri = randomGrid.tracks[currentTrackPointer % randomGrid.tracks.length];
-                gridTrackPointers.set(randomGrid.id, currentTrackPointer + 1);
-            }
-
-            const historyItem = {
-                grid: randomGrid,
-                trackUri: selectedTrackUri
-            };
-
-            shuffleHistory.push(historyItem);
+            shuffleHistory.push(randomGrid);
             historyIndex = shuffleHistory.length - 1;
 
-            playGridTarget(historyItem);
+            playGridTarget(randomGrid);
         }
 
         function playPrevShuffleTrack() {
