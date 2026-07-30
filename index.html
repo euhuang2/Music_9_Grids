@@ -88,7 +88,7 @@
 
         .header-title p { color: var(--text-secondary); font-size: 1rem; letter-spacing: 1px; }
 
-        /* 動畫說明按鈕 */
+        /* 說明按鈕 */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -412,7 +412,7 @@
     </style>
 </head>
 <body>
-    <div class="version-tag">v1.21</div>
+    <div class="version-tag">v1.22</div>
 
     <section class="view-section">
         <header>
@@ -422,7 +422,7 @@
                     <p>九種情緒語境與音樂氛圍的對應</p>
                 </div>
                 <a href="9-box.html" class="btn">
-                    🎬 觀看九宮格動畫說明
+                    🎬 音樂九宮格說明
                 </a>
             </div>
             <a href="https://accounts.spotify.com/login?continue=https%3A%2F%2Fopen.spotify.com" target="_blank" rel="noopener noreferrer" class="spotify-login-btn" onclick="handleSpotifyLogin(event)">
@@ -502,17 +502,23 @@
             });
         }
 
-        function playGridTarget(grid) {
+        function playGridTarget(gridItem) {
             const targetText = document.getElementById('now-playing-target');
             const prevBtn = document.getElementById('prev-track-btn');
 
-            targetText.innerText = grid.titleZh;
+            targetText.innerText = gridItem.titleZh;
             prevBtn.disabled = (historyIndex <= 0);
 
-            stopAllOthers(grid.id);
-            const targetCtrl = controllers.get(grid.id);
+            stopAllOthers(gridItem.id);
+            const targetCtrl = controllers.get(gridItem.id);
             if (targetCtrl) {
-                targetCtrl.play();
+                // 如果已經在這個清單中，推進切換至該清單的下一首曲目，實現全曲目隨機滾動
+                try {
+                    targetCtrl.next();
+                    targetCtrl.play();
+                } catch(e) {
+                    targetCtrl.play();
+                }
             }
         }
 
@@ -556,19 +562,17 @@
         function playNextShuffleTrack() {
             if (!isShuffleActive) return;
 
-            // 如果是在歷史紀錄中且後面還有，則前進下一首
+            // 若在歷史隊列中間，直接往前讀取歷史
             if (historyIndex < shuffleHistory.length - 1) {
                 historyIndex++;
                 playGridTarget(shuffleHistory[historyIndex]);
                 return;
             }
 
-            // 否則隨機抽選（避開當前播放的宮格）
-            let currentId = historyIndex >= 0 ? shuffleHistory[historyIndex].id : null;
-            let availableGrids = musicGrids.filter(g => g.id !== currentId);
-            if (availableGrids.length === 0) availableGrids = musicGrids;
+            // 完全隨機選擇 1~9 個宮格中的任意一個
+            const randomIndex = Math.floor(Math.random() * musicGrids.length);
+            const randomGrid = musicGrids[randomIndex];
 
-            const randomGrid = availableGrids[Math.floor(Math.random() * availableGrids.length)];
             shuffleHistory.push(randomGrid);
             historyIndex = shuffleHistory.length - 1;
 

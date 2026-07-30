@@ -345,7 +345,7 @@
       font-family: 'Noto Serif TC', serif;
       font-size: 1.8rem;
       font-weight: 700;
-      color: #18181b; /* 深石灰 */
+      color: #18181b;
       margin-bottom: 6px;
     }
 
@@ -362,7 +362,7 @@
 
     .feature-card p {
       font-size: 0.98rem;
-      color: #27272a; /* 深灰內文 */
+      color: #27272a;
       line-height: 1.6;
       font-weight: 500;
     }
@@ -468,9 +468,9 @@
     <!-- 右上角低調版本編號 -->
     <div class="version-tag">v1.03</div>
 
-    <!-- 右上網頁連結 -->
+    <!-- 右上網頁連結按鈕 -->
     <a href="https://euhuang2.github.io/Music_9_Grids/" target="_blank" class="link-badge">
-      <i class="fa-solid fa-globe"></i> Music_9_Grids
+      <i class="fa-solid fa-globe"></i> 回到九宮格播放器
     </a>
 
     <!-- 頁頭資訊 -->
@@ -585,7 +585,7 @@
       c6: { bg: '#ffedd5', highlight: '#ea580c', tagBg: '#fed7aa' }, // 莫蘭迪暖橙
       c7: { bg: '#e2e8f0', highlight: '#475569', tagBg: '#cbd5e1' }, // 莫蘭迪霧灰藍
       c8: { bg: '#e0e7ff', highlight: '#4338ca', tagBg: '#c7d2fe' }, // 莫蘭迪靛藍
-      c9: { bg: '#f1f5f9', highlight: '#334155', tagBg: '#e2e8f0' }  : // 莫蘭迪深石灰
+      c9: { bg: '#f1f5f9', highlight: '#334155', tagBg: '#e2e8f0' }  // 莫蘭迪深石灰
     };
 
     const slideData = [
@@ -649,7 +649,7 @@
           setGridVisible(true);
           resetCells(0.15);
           highlight(['c9'], 'highlight-red');
-          setFeatureCardData('c9', "宮格 3/9：右下角", "壮烈凝重", "強烈 (Intense) × 悲沈 (Somber)", "九宮格中張力最強烈的極致區塊，結合深沉悲劇色彩與命運交響般的震撼感。");
+          setFeatureCardData('c9', "宮格 3/9：右下角", "壯烈凝重", "強烈 (Intense) × 悲沈 (Somber)", "九宮格中張力最強烈的極致區塊，結合深沉悲劇色彩與命運交響般的震撼感。");
           showFeatureCard(true);
         }
       },
@@ -661,7 +661,7 @@
           setGridVisible(true);
           resetCells(0.15);
           highlight(['c2'], 'highlight-yellow');
-          setFeatureCardData('c2', "宮格 4/9：中上", "活潑暢意", "中庸 (Moderate) × 愉悅 (Joyful)", "流暢輕快的快板節律，帶有明亮的嬉戲感與奔放活力。");
+          setFeatureCardData('c2', "宮格 4/9：中上", "活潑暢意", "中庸 (Moderate) × 愉悅 (Joyful)", "流暢輕快的快板節律，帶有明亮歡樂的氣息與奔放活力。");
           showFeatureCard(true);
         }
       },
@@ -740,7 +740,7 @@
 
     let currentIndex = 0;
     let isPlaying = true;
-    let duration = 12000; // 12秒輪播
+    let duration = 8000; // 自動播放時間為 8 秒
     let startTime = Date.now();
 
     const titleEl = document.getElementById('title');
