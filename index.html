@@ -412,7 +412,7 @@
     </style>
 </head>
 <body>
-    <div class="version-tag">v1.22</div>
+    <div class="version-tag">v1.23</div>
 
     <section class="view-section">
         <header>
@@ -488,9 +488,11 @@
         ];
 
         const controllers = new Map();
+        // 紀錄各個宮格被播放過的次數，以利推進新曲目
+        const gridPlayCounts = new Map();
+        musicGrids.forEach(g => gridPlayCounts.set(g.id, 0));
+
         let isShuffleActive = false;
-        
-        // 隨機歷史隊列與索引
         let shuffleHistory = [];
         let historyIndex = -1;
 
@@ -502,7 +504,7 @@
             });
         }
 
-        function playGridTarget(gridItem) {
+        function playGridTarget(gridItem, isNewSelection = false) {
             const targetText = document.getElementById('now-playing-target');
             const prevBtn = document.getElementById('prev-track-btn');
 
@@ -511,14 +513,22 @@
 
             stopAllOthers(gridItem.id);
             const targetCtrl = controllers.get(gridItem.id);
+            
             if (targetCtrl) {
-                // 如果已經在這個清單中，推進切換至該清單的下一首曲目，實現全曲目隨機滾動
-                try {
-                    targetCtrl.next();
-                    targetCtrl.play();
-                } catch(e) {
-                    targetCtrl.play();
+                const currentCount = gridPlayCounts.get(gridItem.id) || 0;
+                
+                // 若這是一個新的隨機挑選且之前已經播放過此宮格，強制切換至該清單的下一首
+                if (isNewSelection && currentCount > 0) {
+                    try {
+                        targetCtrl.next();
+                    } catch(e) {}
                 }
+
+                gridPlayCounts.set(gridItem.id, currentCount + 1);
+
+                setTimeout(() => {
+                    try { targetCtrl.play(); } catch(e) {}
+                }, 100);
             }
         }
 
@@ -539,6 +549,9 @@
 
                 shuffleHistory = [];
                 historyIndex = -1;
+                // 重置計數
+                musicGrids.forEach(g => gridPlayCounts.set(g.id, 0));
+
                 playNextShuffleTrack();
             } else {
                 btn.classList.remove('is-active');
@@ -565,18 +578,32 @@
             // 若在歷史隊列中間，直接往前讀取歷史
             if (historyIndex < shuffleHistory.length - 1) {
                 historyIndex++;
-                playGridTarget(shuffleHistory[historyIndex]);
+                playGridTarget(shuffleHistory[historyIndex], false);
                 return;
             }
 
-            // 完全隨機選擇 1~9 個宮格中的任意一個
-            const randomIndex = Math.floor(Math.random() * musicGrids.length);
-            const randomGrid = musicGrids[randomIndex];
+            // 完全隨機選擇：優先選播放次數最少（尚未播放過）的宮格，確保曲目不重複
+            let minCount = Infinity;
+            musicGrids.forEach(g => {
+                const cnt = gridPlayCounts.get(g.id) || 0;
+                if (cnt < minCount) minCount = cnt;
+            });
+
+            // 過濾出目前播放次數最少的宮格組合，並避開當前播放中的宮格
+            let currentId = historyIndex >= 0 ? shuffleHistory[historyIndex].id : null;
+            let candidateGrids = musicGrids.filter(g => (gridPlayCounts.get(g.id) || 0) === minCount && g.id !== currentId);
+            
+            if (candidateGrids.length === 0) {
+                candidateGrids = musicGrids.filter(g => g.id !== currentId);
+            }
+
+            const randomIndex = Math.floor(Math.random() * candidateGrids.length);
+            const randomGrid = candidateGrids[randomIndex];
 
             shuffleHistory.push(randomGrid);
             historyIndex = shuffleHistory.length - 1;
 
-            playGridTarget(randomGrid);
+            playGridTarget(randomGrid, true);
         }
 
         // 點擊「上一首 ⏮」
@@ -584,7 +611,7 @@
             if (!isShuffleActive || historyIndex <= 0) return;
 
             historyIndex--;
-            playGridTarget(shuffleHistory[historyIndex]);
+            playGridTarget(shuffleHistory[historyIndex], false);
         }
 
         function updateSpotifyLoginUI(isLoggedIn) {

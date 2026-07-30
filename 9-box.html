@@ -194,8 +194,9 @@
       transform: translate(-50%, -50%);
     }
 
-    .axis-line-h.expanded { width: 360px; }
-    .axis-line-v.expanded { height: 260px; }
+    /* 修正：將軸線縮短，避免撞到端點文字 */
+    .axis-line-h.expanded { width: 280px; }
+    .axis-line-v.expanded { height: 200px; }
 
     .arrow-head {
       position: absolute;
@@ -221,10 +222,10 @@
       transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
     }
 
-    .label-left { color: #10b981; left: 10px; top: 50%; transform: translateY(-50%) translateX(-20px); }
-    .label-right { color: #ef4444; right: 10px; top: 50%; transform: translateY(-50%) translateX(20px); }
-    .label-top { color: #f59e0b; top: 5px; left: 50%; transform: translateX(-50%) translateY(-20px); }
-    .label-bottom { color: #3b82f6; bottom: 5px; left: 50%; transform: translateX(-50%) translateY(20px); }
+    .label-left { color: #10b981; left: 25px; top: 50%; transform: translateY(-50%) translateX(-20px); }
+    .label-right { color: #ef4444; right: 25px; top: 50%; transform: translateY(-50%) translateX(20px); }
+    .label-top { color: #f59e0b; top: 15px; left: 50%; transform: translateX(-50%) translateY(-20px); }
+    .label-bottom { color: #3b82f6; bottom: 15px; left: 50%; transform: translateX(-50%) translateY(20px); }
 
     .diagram-label.visible {
       opacity: 1;
@@ -319,25 +320,39 @@
       background: rgba(239, 68, 68, 0.15);
     }
 
-    /* 特寫說明卡片面板：莫蘭迪色系 + 深灰文字 */
+    /* 特寫說明卡片面板（Pop-up 卡片 - 位於右側並指向九宮格） */
     .feature-card {
       position: absolute;
-      width: 460px;
+      right: 110px;
+      width: 440px;
       border-radius: 16px;
       padding: 24px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      box-shadow: -10px 20px 40px rgba(0, 0, 0, 0.6);
       z-index: 30;
       opacity: 0;
-      transform: scale(0.9) translateY(20px);
+      transform: scale(0.9) translateX(30px);
       pointer-events: none;
       transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
       text-align: center;
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
+    /* 特寫面板左側指向箭頭 */
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      left: -14px;
+      top: var(--pointer-y, 50%);
+      transform: translateY(-50%);
+      border-top: 12px solid transparent;
+      border-bottom: 12px solid transparent;
+      border-right: 14px solid var(--pointer-color, #f1f5f9);
+      transition: all 0.4s ease;
+    }
+
     .feature-card.visible {
       opacity: 1;
-      transform: scale(1) translateY(0);
+      transform: scale(1) translateX(0);
       pointer-events: auto;
     }
 
@@ -466,7 +481,7 @@
   <div class="stage">
     
     <!-- 右上角低調版本編號 -->
-    <div class="version-tag">v1.03</div>
+    <div class="version-tag">v1.04</div>
 
     <!-- 右上網頁連結按鈕 -->
     <a href="https://euhuang2.github.io/Music_9_Grids/" target="_blank" class="link-badge">
@@ -575,23 +590,28 @@
   </div>
 
   <script>
-    // 各宮格莫蘭迪色系配置
+    // 各宮格莫蘭迪色系與指向箭頭位置配置 (row: 1=上, 2=中, 3=下)
     const morandiStyles = {
-      c1: { bg: '#dbece5', highlight: '#0f766e', tagBg: '#c3e2d4' }, // 莫蘭迪薄荷綠
-      c2: { bg: '#fef3c7', highlight: '#d97706', tagBg: '#fde68a' }, // 莫蘭迪柔黃
-      c3: { bg: '#fee2e2', highlight: '#dc2626', tagBg: '#fca5a5' }, // 莫蘭迪暖紅
-      c4: { bg: '#e0f2fe', highlight: '#0284c7', tagBg: '#bae6fd' }, // 莫蘭迪天藍
-      c5: { bg: '#f3e8ff', highlight: '#7c3aed', tagBg: '#e9d5ff' }, // 莫蘭迪柔紫
-      c6: { bg: '#ffedd5', highlight: '#ea580c', tagBg: '#fed7aa' }, // 莫蘭迪暖橙
-      c7: { bg: '#e2e8f0', highlight: '#475569', tagBg: '#cbd5e1' }, // 莫蘭迪霧灰藍
-      c8: { bg: '#e0e7ff', highlight: '#4338ca', tagBg: '#c7d2fe' }, // 莫蘭迪靛藍
-      c9: { bg: '#f1f5f9', highlight: '#334155', tagBg: '#e2e8f0' }  // 莫蘭迪深石灰
+      c1: { bg: '#dbece5', highlight: '#0f766e', tagBg: '#c3e2d4', row: 1 },
+      c2: { bg: '#fef3c7', highlight: '#d97706', tagBg: '#fde68a', row: 1 },
+      c3: { bg: '#fee2e2', highlight: '#dc2626', tagBg: '#fca5a5', row: 1 },
+      c4: { bg: '#e0f2fe', highlight: '#0284c7', tagBg: '#bae6fd', row: 2 },
+      c5: { bg: '#f3e8ff', highlight: '#7c3aed', tagBg: '#e9d5ff', row: 2 },
+      c6: { bg: '#ffedd5', highlight: '#ea580c', tagBg: '#fed7aa', row: 2 },
+      c7: { bg: '#e2e8f0', highlight: '#475569', tagBg: '#cbd5e1', row: 3 },
+      c8: { bg: '#e0e7ff', highlight: '#4338ca', tagBg: '#c7d2fe', row: 3 },
+      c9: { bg: '#f1f5f9', highlight: '#334155', tagBg: '#e2e8f0', row: 3 }
     };
+
+    // 依序漸顯登場的宮格順序（右上 -> 右中 -> 右下 -> 中上 -> 正中 -> 中下 -> 左上 -> 左中 -> 左下）
+    const appearSequence = ['c3', 'c6', 'c9', 'c2', 'c5', 'c8', 'c1', 'c4', 'c7'];
+    let revealTimer = null;
 
     const slideData = [
       {
         title: "音樂九宮格：聽覺情緒的立體地圖",
         caption: "歡迎體驗「音樂九宮格」，透過極簡的雙軸架構，為抽象的聽覺感受找到精確的心情座標。",
+        duration: 8000,
         setup: () => {
           showAxisDiagram(false);
           showFeatureCard(false);
@@ -602,6 +622,7 @@
       {
         title: "聽音樂的兩個感受面向：橫軸動態",
         caption: "第一面向為「樂曲張力」橫軸：從左側的「輕柔」漸進延展至右側的「強烈」。",
+        duration: 8000,
         setup: () => {
           showFeatureCard(false);
           setGridVisible(false);
@@ -611,6 +632,7 @@
       {
         title: "聽音樂的兩個感受面向：縱軸調性",
         caption: "第二面向加入「情感調性」縱軸：從上方的「愉悅」向下延伸至底部的「悲沈」，構建出完整座標系。",
+        duration: 8000,
         setup: () => {
           showFeatureCard(false);
           setGridVisible(false);
@@ -618,8 +640,44 @@
         }
       },
       {
+        title: "交織構建：完整的九種音樂情緒九宮格",
+        caption: "雙軸交會劃分出九種獨特的情緒語境，呈現完整的聽覺情緒光譜。",
+        duration: 10000, // 新增頁面停留 10 秒
+        setup: () => {
+          showAxisDiagram(false);
+          showFeatureCard(false);
+          setGridVisible(true);
+          
+          // 初始隱藏所有宮格，隨後依序登場
+          document.querySelectorAll('.cell').forEach(cell => {
+            cell.className = 'cell';
+            cell.style.opacity = '0';
+            cell.style.transform = 'scale(0.8)';
+          });
+          gridWrapper.style.transform = 'scale(1)';
+
+          if (revealTimer) clearInterval(revealTimer);
+          let seqIndex = 0;
+          revealTimer = setInterval(() => {
+            if (seqIndex < appearSequence.length) {
+              const cellId = appearSequence[seqIndex];
+              const el = document.getElementById(cellId);
+              if (el) {
+                el.style.opacity = '1';
+                el.style.transform = 'scale(1)';
+                el.classList.add('active');
+              }
+              seqIndex++;
+            } else {
+              clearInterval(revealTimer);
+            }
+          }, 350);
+        }
+      },
+      {
         title: "宮格導覽 1/9：右上角",
         caption: "位於右上角的「振奮激昂」，具備強烈的動態對比與躍動重音，展現出勝利與英雄般的昂揚能量。",
+        duration: 8000,
         setup: () => {
           showAxisDiagram(false);
           setGridVisible(true);
@@ -632,6 +690,7 @@
       {
         title: "宮格導覽 2/9：右中",
         caption: "位於右中的「雄偉莊嚴」，帶有浩瀚宏大的音樂結構，展現出崇高、威嚴與歷史厚重感。",
+        duration: 8000,
         setup: () => {
           showAxisDiagram(false);
           setGridVisible(true);
@@ -644,6 +703,7 @@
       {
         title: "宮格導覽 3/9：右下角",
         caption: "位於右下角的「壯烈凝重」，融合了極具撼動力的重音與命運主題，呈現命運抗爭的深沉力量。",
+        duration: 8000,
         setup: () => {
           showAxisDiagram(false);
           setGridVisible(true);
@@ -656,6 +716,7 @@
       {
         title: "宮格導覽 4/9：中上",
         caption: "位於中上的「活潑暢意」，節奏明快跳躍，充滿靈動與歡欣的日常生氣。",
+        duration: 8000,
         setup: () => {
           showAxisDiagram(false);
           setGridVisible(true);
@@ -668,6 +729,7 @@
       {
         title: "宮格導覽 5/9：正中心",
         caption: "位於正中心的「中庸從容」，是古典美學的平衡典範，不疾不徐，展現優雅沉穩的和諧樂音。",
+        duration: 8000,
         setup: () => {
           showAxisDiagram(false);
           setGridVisible(true);
@@ -680,6 +742,7 @@
       {
         title: "宮格導覽 6/9：中下",
         caption: "位於中下的「深沈濃郁」，具備極為豐富的情感層次，帶有強烈的渲染力與生命沉澱感。",
+        duration: 8000,
         setup: () => {
           showAxisDiagram(false);
           setGridVisible(true);
@@ -692,6 +755,7 @@
       {
         title: "宮格導覽 7/9：左上角",
         caption: "位於左上角的「輕鬆愉悅」，帶來如微風般輕盈優雅的旋律，能瞬間撫平焦慮、沉澱心靈。",
+        duration: 8000,
         setup: () => {
           showAxisDiagram(false);
           setGridVisible(true);
@@ -704,6 +768,7 @@
       {
         title: "宮格導覽 8/9：左中",
         caption: "位於左中的「悠揚舒緩」，音符如流水般平緩漫延，適合放鬆沉思與陪伴日常。",
+        duration: 8000,
         setup: () => {
           showAxisDiagram(false);
           setGridVisible(true);
@@ -716,6 +781,7 @@
       {
         title: "宮格導覽 9/9：左下角",
         caption: "位於左下角的「低迴沉吟」，表現微弱而深情的低語，蘊含內斂的傷感，適合深夜獨處品味。",
+        duration: 8000,
         setup: () => {
           showAxisDiagram(false);
           setGridVisible(true);
@@ -728,6 +794,7 @@
       {
         title: "音樂九宮格：探索屬於你的情緒旋律",
         caption: "完整九宮格地圖呈現！點擊任一宮格即可連動 Spotify 隨機播放對應曲風，歡迎線上體驗！",
+        duration: 8000,
         setup: () => {
           showAxisDiagram(false);
           setGridVisible(true);
@@ -740,7 +807,7 @@
 
     let currentIndex = 0;
     let isPlaying = true;
-    let duration = 8000; // 自動播放時間為 8 秒
+    let duration = 8000;
     let startTime = Date.now();
 
     const titleEl = document.getElementById('title');
@@ -798,9 +865,11 @@
     }
 
     function resetCells(opacity = 0.25) {
+      if (revealTimer) clearInterval(revealTimer);
       document.querySelectorAll('.cell').forEach(cell => {
         cell.className = 'cell';
         cell.style.opacity = opacity;
+        cell.style.transform = 'scale(1)';
       });
       gridWrapper.style.transform = 'scale(1)';
     }
@@ -813,8 +882,16 @@
     }
 
     function setFeatureCardData(cellId, tag, title, coords, desc) {
-      const style = morandiStyles[cellId] || { bg: '#f1f5f9', highlight: '#000', tagBg: '#e2e8f0' };
+      const style = morandiStyles[cellId] || { bg: '#f1f5f9', highlight: '#000', tagBg: '#e2e8f0', row: 2 };
       featureCard.style.backgroundColor = style.bg;
+      featureCard.style.setProperty('--pointer-color', style.bg);
+      
+      // 動態計算指示箭頭的高低位置（對應九宮格的上中下三列）
+      let pointerYPercent = '50%';
+      if (style.row === 1) pointerYPercent = '25%';
+      else if (style.row === 3) pointerYPercent = '75%';
+      featureCard.style.setProperty('--pointer-y', pointerYPercent);
+
       featureTag.innerText = tag;
       featureTag.style.backgroundColor = style.tagBg;
       featureTag.style.color = style.highlight;
@@ -827,10 +904,11 @@
     function showFeatureCard(show) {
       if (show) {
         featureCard.classList.add('visible');
-        gridWrapper.style.transform = 'scale(0.85) translateX(-180px)';
+        // 修正：九宮格縮小置於左邊，特寫 Pop-up 卡片位於右側稍微遮住九宮格右邊緣
+        gridWrapper.style.transform = 'scale(0.85) translateX(-240px)';
       } else {
         featureCard.classList.remove('visible');
-        gridWrapper.style.transform = 'scale(1)';
+        gridWrapper.style.transform = 'scale(1) translateX(0)';
       }
     }
 
@@ -838,6 +916,7 @@
       const data = slideData[index];
       titleEl.innerText = data.title;
       captionTextEl.innerText = data.caption;
+      duration = data.duration || 8000;
 
       data.setup();
       startTime = Date.now();
