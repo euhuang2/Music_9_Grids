@@ -69,6 +69,13 @@
             gap: 1.5rem;
         }
 
+        .header-title-container {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+        }
+
         .header-title h1 {
             font-size: 2.2rem;
             font-weight: 700;
@@ -76,10 +83,134 @@
             background: linear-gradient(135deg, #fef3c7 0%, #d97706 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
         }
 
         .header-title p { color: var(--text-secondary); font-size: 1rem; letter-spacing: 1px; }
+
+        /* 動畫說明按鈕 */
+        .presentation-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 0.6rem 1.1rem;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            white-space: nowrap;
+        }
+
+        .presentation-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5);
+            background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+        }
+
+        /* 專屬控制列 (主標題與九宮格之間) */
+        .control-bar {
+            width: 100%;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 0.85rem 1.25rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            backdrop-filter: blur(8px);
+        }
+
+        .shuffle-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--btn-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--accent-gold);
+            padding: 0.6rem 1.2rem;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .shuffle-btn:hover {
+            background-color: var(--accent-gold);
+            color: #000000;
+        }
+
+        .shuffle-btn.is-active {
+            background-color: var(--accent-gold);
+            color: #000000;
+            box-shadow: 0 0 15px rgba(217, 119, 6, 0.5);
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 10px rgba(217, 119, 6, 0.4); }
+            50% { box-shadow: 0 0 20px rgba(217, 119, 6, 0.8); }
+            100% { box-shadow: 0 0 10px rgba(217, 119, 6, 0.4); }
+        }
+
+        .now-playing-banner {
+            display: none;
+            align-items: center;
+            gap: 0.8rem;
+            background: rgba(217, 119, 6, 0.15);
+            border: 1px solid rgba(217, 119, 6, 0.4);
+            border-radius: 30px;
+            padding: 0.4rem 1rem;
+            font-size: 0.9rem;
+            color: var(--accent-gold-light);
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .now-playing-banner.is-visible {
+            display: flex;
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .now-playing-info {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .close-shuffle-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            transition: color 0.2s;
+            white-space: nowrap;
+        }
+
+        .close-shuffle-btn:hover {
+            color: #ffffff;
+        }
 
         .detail-header-bar {
             width: 100%;
@@ -209,10 +340,9 @@
 
         body.detail-mode .grid-container { display: block; }
         body.detail-mode .grid-card:not(.is-active) { display: none !important; }
-        body.detail-mode header, body.detail-mode .premium-tip-banner { display: none; }
+        body.detail-mode header, body.detail-mode .control-bar, body.detail-mode .premium-tip-banner { display: none; }
         body.detail-mode .detail-header-bar, body.detail-mode .bottom-nav { display: flex; }
 
-        /* 提示區域背景與高對比白字 */
         .premium-tip-banner {
             width: 100%;
             background-color: rgba(30, 41, 59, 0.95);
@@ -233,11 +363,8 @@
             transition: color 0.2s ease;
         }
 
-        .premium-tip-banner a:hover {
-            color: #ffffff;
-        }
+        .premium-tip-banner a:hover { color: #ffffff; }
 
-        /* 白色 Spotify 圖示 */
         .inline-spotify-icon {
             width: 16px;
             height: 16px;
@@ -259,19 +386,42 @@
     </style>
 </head>
 <body>
-    <div class="version-tag">v1.18</div>
+    <div class="version-tag">v1.19</div>
 
     <section class="view-section">
         <header>
-            <div class="header-title">
-                <h1>于峻的音樂九宮格</h1>
-                <p>九種情緒語境與音樂氛圍的對應</p>
+            <div class="header-title-container">
+                <div class="header-title">
+                    <h1>于峻的音樂九宮格</h1>
+                    <p>九種情緒語境與音樂氛圍的對應</p>
+                </div>
+                <a href="9-box-presentation.html" class="presentation-btn">
+                    🎬 觀看九宮格動畫說明
+                </a>
             </div>
             <a href="https://accounts.spotify.com/login?continue=https%3A%2F%2Fopen.spotify.com" target="_blank" rel="noopener noreferrer" class="spotify-login-btn" onclick="handleSpotifyLogin(event)">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141 C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
                 <span class="spotify-btn-text">登入 Spotify</span>
             </a>
         </header>
+
+        <!-- 專屬控制列（主標題與九宮格之間） -->
+        <div class="control-bar">
+            <button class="shuffle-btn" id="shuffle-btn" onclick="toggleShuffleMode()">
+                <span id="shuffle-btn-icon">🔀</span>
+                <span id="shuffle-btn-text">跨宮格隨機播放</span>
+            </button>
+
+            <div class="now-playing-banner" id="now-playing-banner">
+                <div class="player-controls">
+                    <div class="now-playing-info">
+                        <span>♫ 正在播放：</span>
+                        <span id="now-playing-target" style="color: #ffffff;">-</span>
+                    </div>
+                </div>
+                <button class="close-shuffle-btn" onclick="toggleShuffleMode(false)" title="關閉隨機播放">✕ 關閉</button>
+            </div>
+        </div>
 
         <div class="detail-header-bar">
             <button class="back-btn" onclick="showMainView()"><span>← 回到九宮格</span></button>
@@ -310,17 +460,68 @@
         ];
 
         const controllers = new Map();
+        let isShuffleActive = false;
+        let currentShuffleGridId = null;
 
         function stopAllOthers(activeId) {
             controllers.forEach((ctrl, id) => {
                 if (id !== activeId && ctrl) {
-                    try {
-                        ctrl.pause();
-                    } catch (err) {
-                        console.log('Pause error:', err);
-                    }
+                    try { ctrl.pause(); } catch (err) {}
                 }
             });
+        }
+
+        // 開關隨機播放模式
+        function toggleShuffleMode(forceState = null) {
+            isShuffleActive = (forceState !== null) ? forceState : !isShuffleActive;
+
+            const btn = document.getElementById('shuffle-btn');
+            const btnIcon = document.getElementById('shuffle-btn-icon');
+            const btnText = document.getElementById('shuffle-btn-text');
+            const banner = document.getElementById('now-playing-banner');
+
+            if (isShuffleActive) {
+                btn.classList.add('is-active');
+                btnIcon.innerText = '⏸';
+                btnText.innerText = '隨機播放中';
+                banner.classList.add('is-visible');
+
+                playRandomGrid();
+            } else {
+                btn.classList.remove('is-active');
+                btnIcon.innerText = '🔀';
+                btnText.innerText = '跨宮格隨機播放';
+                banner.classList.remove('is-visible');
+
+                if (currentShuffleGridId) {
+                    const activeCtrl = controllers.get(currentShuffleGridId);
+                    if (activeCtrl) {
+                        try { activeCtrl.pause(); } catch(e){}
+                    }
+                }
+                currentShuffleGridId = null;
+            }
+        }
+
+        // 隨機選擇一個宮格並播放
+        function playRandomGrid() {
+            if (!isShuffleActive) return;
+
+            // 避開當前宮格
+            let availableGrids = musicGrids.filter(g => g.id !== currentShuffleGridId);
+            if (availableGrids.length === 0) availableGrids = musicGrids;
+
+            const randomGrid = availableGrids[Math.floor(Math.random() * availableGrids.length)];
+            currentShuffleGridId = randomGrid.id;
+
+            const targetText = document.getElementById('now-playing-target');
+            targetText.innerText = randomGrid.titleZh;
+
+            stopAllOthers(randomGrid.id);
+            const targetCtrl = controllers.get(randomGrid.id);
+            if (targetCtrl) {
+                targetCtrl.play();
+            }
         }
 
         function updateSpotifyLoginUI(isLoggedIn) {
