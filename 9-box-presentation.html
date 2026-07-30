@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eugene's Music 9-box Grid - 動畫簡報</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-dark: #0a0d14;
+      --card-bg: rgba(255, 255, 255, 0.04);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --text-main: #f1f5f9;
+      --text-sub: #94a3b8;
+      
+      --accent-gold: #d4af37;
+      --accent-yellow: #f59e0b;
+      --accent-green: #10b981;
+      --accent-blue: #3b82f6;
+      --accent-red: #ef4444;
+      --accent-purple: #8b5cf6;
+      
+      --glow-gold: rgba(212, 175, 55, 0.35);
+      --glow-blue: rgba(59, 130, 246, 0.35);
+      --glow-red: rgba(239, 68, 68, 0.35);
+      --glow-green: rgba(16, 185, 129, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: #030508;
+      color: var(--text-main);
+      font-family: 'Montserrat', 'Noto Serif TC', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* 主舞台 16:9 比例 */
+    .stage {
+      width: 1280px;
+      height: 720px;
+      background-color: var(--bg-dark);
+      border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 175, 55, 0.1);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 40px 60px 30px 60px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* 背景流光氣氛 */
+    .stage::before {
+      content: '';
+      position: absolute;
+      top: -30%;
+      left: -20%;
+      width: 140%;
+      height: 160%;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.06) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(239, 68, 68, 0.04) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* 頂部標題區 */
+    .header {
+      text-align: center;
+      z-index: 10;
+      transition: all 0.5s ease;
+    }
+
+    .header .slide-num {
+      font-size: 0.85rem;
+      color: var(--accent-gold);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .header h1 {
+      font-size: 2.2rem;
+      font-family: 'Noto Serif TC', serif;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .header p {
+      font-size: 1.05rem;
+      color: var(--text-sub);
+      font-weight: 400;
+    }
+
+    /* 主視覺區域（九宮格矩陣） */
+    .viewport {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+      margin: 15px 0;
+    }
+
+    .grid-wrapper {
+      position: relative;
+      padding: 35px;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* 軸線標籤 */
+    .axis-tag {
+      position: absolute;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      transition: all 0.5s ease;
+      opacity: 0.8;
+    }
+
+    .tag-top { top: 2px; left: 50%; transform: translateX(-50%); color: var(--accent-yellow); }
+    .tag-bottom { bottom: 2px; left: 50%; transform: translateX(-50%); color: var(--accent-blue); }
+    .tag-left { left: -15px; top: 50%; transform: translateY(-50%) rotate(-90deg); color: var(--accent-green); }
+    .tag-right { right: -15px; top: 50%; transform: translateY(-50%) rotate(90deg); color: var(--accent-red); }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(3, 150px);
+      grid-template-rows: repeat(3, 110px);
+      gap: 14px;
+    }
+
+    /* 宮格卡片 */
+    .cell {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+      opacity: 0.25;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .cell .title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 4px;
+      text-align: center;
+      font-family: 'Noto Serif TC', serif;
+    }
+
+    .cell .coords {
+      font-size: 0.7rem;
+      color: var(--text-sub);
+      font-weight: 400;
+      letter-spacing: 0.5px;
+    }
+
+    /* 狀態觸發 Class */
+    .cell.active {
+      opacity: 1;
+      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .cell.focus {
+      opacity: 1;
+      transform: scale(1.12);
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 30px var(--glow-gold);
+      background: rgba(212, 175, 55, 0.15);
+      z-index: 20;
+    }
+
+    .cell.highlight-yellow {
+      opacity: 1;
+      border-color: var(--accent-yellow);
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
+      background: rgba(245, 158, 11, 0.12);
+    }
+
+    .cell.highlight-blue {
+      opacity: 1;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 20px var(--glow-blue);
+      background: rgba(59, 130, 246, 0.12);
+    }
+
+    .cell.highlight-green {
+      opacity: 1;
+      border-color: var(--accent-green);
+      box-shadow: 0 0 20px var(--glow-green);
+      background: rgba(16, 185, 129, 0.12);
+    }
+
+    .cell.highlight-red {
+      opacity: 1;
+      border-color: var(--accent-red);
+      box-shadow: 0 0 20px var(--glow-red);
+      background: rgba(239, 68, 68, 0.12);
+    }
+
+    /* 特殊卡片展示區（單獨導覽用） */
+    .feature-card {
+      position: absolute;
+      width: 500px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--accent-gold);
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 30px var(--glow-gold);
+      backdrop-filter: blur(10px);
+      z-index: 30;
+      opacity: 0;
+      transform: scale(0.9) translateY(20px);
+      pointer-events: none;
+      transition: all 0.5s ease;
+      text-align: center;
+    }
+
+    .feature-card.visible {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+    }
+
+    .feature-card h2 {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.8rem;
+      color: var(--accent-gold);
+      margin-bottom: 10px;
+    }
+
+    .feature-card .tag {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(212, 175, 55, 0.15);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      color: var(--accent-yellow);
+      margin-bottom: 15px;
+    }
+
+    .feature-card p {
+      font-size: 1rem;
+      color: #cbd5e1;
+      line-height: 1.6;
+    }
+
+    /* 下方解說字幕區 */
+    .subtitle-box {
+      z-index: 10;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      padding: 16px 30px;
+      border-radius: 50px;
+      text-align: center;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      transition: all 0.4s ease;
+    }
+
+    .subtitle-text {
+      font-size: 1.05rem;
+      color: #e2e8f0;
+      line-height: 1.5;
+      font-weight: 400;
+      letter-spacing: 0.3px;
+    }
+
+    /* 播放控制列 */
+    .controls {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      z-index: 20;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 6px 18px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .ctrl-btn {
+      background: none;
+      border: none;
+      color: var(--text-sub);
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: color 0.2s ease;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ctrl-btn:hover { color: var(--accent-gold); }
+
+    .progress-bar-container {
+      width: 240px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 2px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-gold);
+      transition: width 0.1s linear;
+    }
+
+    /* 外部網頁連結按鈕 */
+    .link-badge {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      color: var(--text-sub);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: all 0.3s ease;
+    }
+
+    .link-badge:hover {
+      background: rgba(212, 175, 55, 0.15);
+      border-color: var(--accent-gold);
+      color: var(--accent-gold);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="stage">
+    
+    <!-- 頂部右側網頁連結 -->
+    <a href="https://euhuang2.github.io/Music_9_Grids/" target="_blank" class="link-badge">
+      <i class="fa-solid fa-globe"></i> Music_9_Grids
+    </a>
+
+    <!-- 頁頭資訊 -->
+    <div class="header">
+      <div class="slide-num" id="slideNum">SLIDE 01 / 12</div>
+      <h1 id="title">Eugene's Music 9-box Grid</h1>
+      <p id="subtitle">音樂九宮格：聽覺情緒的立體地圖</p>
+    </div>
+
+    <!-- 主視覺九宮格 -->
+    <div class="viewport">
+      
+      <div class="grid-wrapper" id="gridWrapper">
+        <div class="axis-tag tag-top">▲ 愉悅</div>
+        <div class="axis-tag tag-bottom">▼ 悲沈</div>
+        <div class="axis-tag tag-left">◄ 輕柔</div>
+        <div class="axis-tag tag-right">強烈 ►</div>
+
+        <div class="grid-container">
+          <div class="cell" id="c1">
+            <div class="title">輕鬆愉悅</div>
+            <div class="coords">輕柔 × 愉悅</div>
+          </div>
+          <div class="cell" id="c2">
+            <div class="title">活潑暢意</div>
+            <div class="coords">中庸 × 愉悅</div>
+          </div>
+          <div class="cell" id="c3">
+            <div class="title">振奮激昂</div>
+            <div class="coords">強烈 × 愉悅</div>
+          </div>
+          <div class="cell" id="c4">
+            <div class="title">悠揚舒緩</div>
+            <div class="coords">輕柔 × 中庸</div>
+          </div>
+          <div class="cell" id="c5">
+            <div class="title">中庸從容</div>
+            <div class="coords">中庸 × 中庸</div>
+          </div>
+          <div class="cell" id="c6">
+            <div class="title">雄偉莊嚴</div>
+            <div class="coords">強烈 × 中庸</div>
+          </div>
+          <div class="cell" id="c7">
+            <div class="title">低迴沉吟</div>
+            <div class="coords">輕柔 × 悲沈</div>
+          </div>
+          <div class="cell" id="c8">
+            <div class="title">深沈濃郁</div>
+            <div class="coords">中庸 × 悲沈</div>
+          </div>
+          <div class="cell" id="c9">
+            <div class="title">壯烈凝重</div>
+            <div class="coords">強烈 × 悲沈</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 9 專用特寫面板（前導說明頁） -->
+      <div class="feature-card" id="featureCard">
+        <div class="tag">前導與極致張力解析</div>
+        <h2>壯烈凝重</h2>
+        <p style="margin-bottom: 12px; color: var(--accent-yellow);">座標：強烈 (Intense) × 悲沈 (Somber)</p>
+        <p>這是九宮格中張力最強烈的極致區塊。結合管絃樂重音與深沉悲劇色彩，展現命運抗爭與史詩般震撼的情感體驗。</p>
+      </div>
+
+    </div>
+
+    <!-- 字幕解說區 -->
+    <div class="subtitle-box">
+      <div class="subtitle-text" id="captionText">
+        載入中...
+      </div>
+    </div>
+
+    <!-- 播放控制選單 -->
+    <div class="controls">
+      <button class="ctrl-btn" id="prevBtn" title="上一頁"><i class="fa-solid fa-backward-step"></i></button>
+      <button class="ctrl-btn" id="playBtn" title="播放/暫停"><i class="fa-solid fa-pause"></i></button>
+      <button class="ctrl-btn" id="nextBtn" title="下一頁"><i class="fa-solid fa-forward-step"></i></button>
+      <div class="progress-bar-container" id="progressContainer">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // 12 張投影片數據與控制邏輯
+    const slideData = [
+      {
+        num: "01 / 12",
+        title: "Eugene's Music 9-box Grid",
+        subtitle: "音樂九宮格：聽覺情緒的立體地圖",
+        caption: "歡迎體驗「音樂九宮格」，透過極簡的雙軸架構，為抽象的聽覺感受找到精確的心情座標。",
+        setup: () => resetCells(0.2)
+      },
+      {
+        num: "02 / 12",
+        title: "雙軸交會：音樂語境定位法",
+        subtitle: "縱軸：愉悅至悲沈 ｜ 橫軸：輕柔至強烈",
+        caption: "以「樂曲張力」為橫軸，從輕柔橫跨至強烈；以「情感調性」為縱軸，從愉悅渡越至悲沈。",
+        setup: () => {
+          resetCells(0.2);
+          showAxisGlow(true);
+        }
+      },
+      {
+        num: "03 / 12",
+        title: "橫軸解析：張力與動態表現",
+        subtitle: "輕柔 (Soft) ➔ 中庸 (Moderate) ➔ 強烈 (Intense)",
+        caption: "橫軸代表聲音的聲響厚度與動態，從左側低語般的輕柔，延伸至右側激昂宏大的震撼爆發。",
+        setup: () => {
+          resetCells(0.25);
+          highlight(['c1', 'c4', 'c7'], 'highlight-green');
+          highlight(['c3', 'c6', 'c9'], 'highlight-red');
+        }
+      },
+      {
+        num: "04 / 12",
+        title: "縱軸解析：情感與色彩調性",
+        subtitle: "愉悅 (Joyful) ➔ 悲沈 (Somber)",
+        caption: "縱軸代表音樂的情感渲染力，上方展現充滿希望的明亮旋律，下方則進入深沉沉思的心靈空間。",
+        setup: () => {
+          resetCells(0.25);
+          highlight(['c1', 'c2', 'c3'], 'highlight-yellow');
+          highlight(['c7', 'c8', 'c9'], 'highlight-blue');
+        }
+      },
+      {
+        num: "05 / 12",
+        title: "第一區塊：輕快與積極語境",
+        subtitle: "輕鬆愉悅 ｜ 活潑暢意 ｜ 振奮激昂",
+        caption: "上層區域展現出正面而溫暖的音樂能量，從輕柔的舒緩微風，漸強至充滿勝利感的英雄張力。",
+        setup: () => {
+          resetCells(0.25);
+          highlight(['c1', 'c2', 'c3'], 'highlight-yellow');
+        }
+      },
+      {
+        num: "06 / 12",
+        title: "第二區塊：舒緩與中庸語境",
+        subtitle: "悠揚舒緩 ｜ 中庸從容 ｜ 雄偉莊嚴",
+        caption: "中層區域是古典美學的平衡典範，不疾不徐，展現優雅沉穩的樂曲流動與和諧感。",
+        setup: () => {
+          resetCells(0.25);
+          highlight(['c4', 'c5', 'c6'], 'active');
+        }
+      },
+      {
+        num: "07 / 12",
+        title: "語境解析：低迴沉吟",
+        subtitle: "座標：輕柔 (Soft) × 悲沈 (Somber)",
+        caption: "位於左下角的「低迴沉吟」，表現微弱而深情的低語，蘊含內斂的傷感與孤寂，適合深夜獨處品味。",
+        setup: () => {
+          resetCells(0.2);
+          highlight(['c7'], 'focus');
+        }
+      },
+      {
+        num: "08 / 12",
+        title: "語境解析：深沈濃郁",
+        subtitle: "座標：中庸 (Moderate) × 悲沈 (Somber)",
+        caption: "正下方的「深沈濃郁」，具備極為豐富的情感層次與張力，帶有強烈的渲染力與生命沉澱感。",
+        setup: () => {
+          resetCells(0.2);
+          highlight(['c8'], 'focus');
+        }
+      },
+      {
+        num: "09 / 12",
+        title: "極致張力：壯烈凝重（前導與解析）",
+        subtitle: "座標：強烈 (Intense) × 悲沈 (Somber)",
+        caption: "在進入整體全貌前，我們特別關注右下角的極致區塊：它融合了管弦樂重音與史詩般震撼的命運主題。",
+        setup: () => {
+          resetCells(0.15);
+          highlight(['c9'], 'highlight-red');
+          showFeatureCard(true);
+        }
+      },
+      {
+        num: "10 / 12",
+        title: "Eugene's Music 9-box Grid",
+        subtitle: "九宮格完整全貌",
+        caption: "完整的九宮格地圖重磅登場！9 種獨特的情緒張力各得其所，共構出立體的音樂欣賞維度。",
+        setup: () => {
+          showFeatureCard(false);
+          resetCells(1);
+          highlight(['c1','c2','c3','c4','c5','c6','c7','c8','c9'], 'active');
+        }
+      },
+      {
+        num: "11 / 12",
+        title: "點擊即聽：串接 Spotify 歌單",
+        subtitle: "單曲池機制 ｜ 跨宮格隨機播放",
+        caption: "整合 Spotify 播放清單，點擊任一宮格即可切換對應氛圍，輕鬆打造無窮盡的個人音樂電台。",
+        setup: () => {
+          showFeatureCard(false);
+          resetCells(0.85);
+          highlight(['c1','c3','c5','c7','c9'], 'highlight-yellow');
+        }
+      },
+      {
+        num: "12 / 12",
+        title: "探索屬於你的情緒旋律",
+        subtitle: "https://euhuang2.github.io/Music_9_Grids/",
+        caption: "無論此刻身處何種心情，都能在音樂九宮格裡找到共鳴的樂章。歡迎點擊右上角連結親自體驗！",
+        setup: () => {
+          showFeatureCard(false);
+          resetCells(1);
+          highlight(['c1','c2','c3','c4','c5','c6','c7','c8','c9'], 'focus');
+        }
+      }
+    ];
+
+    let currentIndex = 0;
+    let isPlaying = true;
+    let duration = 6000; // 每頁 6 秒
+    let startTime = Date.now();
+    let timer = null;
+
+    // DOM 元素
+    const slideNumEl = document.getElementById('slideNum');
+    const titleEl = document.getElementById('title');
+    const subtitleEl = document.getElementById('subtitle');
+    const captionTextEl = document.getElementById('captionText');
+    const progressBar = document.getElementById('progressBar');
+    const playBtn = document.getElementById('playBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const featureCard = document.getElementById('featureCard');
+    const gridWrapper = document.getElementById('gridWrapper');
+
+    function resetCells(opacity = 0.25) {
+      document.querySelectorAll('.cell').forEach(cell => {
+        cell.className = 'cell';
+        cell.style.opacity = opacity;
+      });
+      gridWrapper.style.transform = 'scale(1)';
+    }
+
+    function highlight(ids, className) {
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add(className);
+      });
+    }
+
+    function showFeatureCard(show) {
+      if (show) {
+        featureCard.classList.add('visible');
+        gridWrapper.style.transform = 'scale(0.85) translateX(-180px)';
+      } else {
+        featureCard.classList.remove('visible');
+        gridWrapper.style.transform = 'scale(1)';
+      }
+    }
+
+    function showAxisGlow(show) {
+      const tags = document.querySelectorAll('.axis-tag');
+      tags.forEach(tag => {
+        tag.style.opacity = show ? '1' : '0.8';
+        tag.style.textShadow = show ? '0 0 10px rgba(255,255,255,0.5)' : 'none';
+      });
+    }
+
+    function renderSlide(index) {
+      const data = slideData[index];
+      slideNumEl.innerText = `SLIDE ${data.num}`;
+      titleEl.innerText = data.title;
+      subtitleEl.innerText = data.subtitle;
+      captionTextEl.innerText = data.caption;
+
+      data.setup();
+      startTime = Date.now();
+    }
+
+    function updateProgress() {
+      if (!isPlaying) return;
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min((elapsed / duration) * 100, 100);
+      progressBar.style.width = `${progress}%`;
+
+      if (elapsed >= duration) {
+        currentIndex = (currentIndex + 1) % slideData.length;
+        renderSlide(currentIndex);
+      }
+
+      requestAnimationFrame(updateProgress);
+    }
+
+    // 控制事件
+    playBtn.addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      playBtn.innerHTML = isPlaying ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>';
+      if (isPlaying) {
+        startTime = Date.now() - (parseFloat(progressBar.style.width) / 100 * duration);
+        requestAnimationFrame(updateProgress);
+      }
+    });
+
+    prevBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + slideData.length) % slideData.length;
+      progressBar.style.width = '0%';
+      renderSlide(currentIndex);
+    });
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % slideData.length;
+      progressBar.style.width = '0%';
+      renderSlide(currentIndex);
+    });
+
+    // 初始化啟動
+    renderSlide(0);
+    requestAnimationFrame(updateProgress);
+  </script>
+</body>
+</html>
+
