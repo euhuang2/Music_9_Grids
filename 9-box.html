@@ -152,11 +152,94 @@
     .tag-left { left: -35px; top: 50%; transform: translateY(-50%) rotate(-90deg); color: var(--accent-green); }
     .tag-right { right: -35px; top: 50%; transform: translateY(-50%) rotate(90deg); color: var(--accent-red); }
 
+    /* 雙軸展開展示向量圖 (Slide 2 & 3) */
+    .axis-diagram-container {
+      position: absolute;
+      width: 500px;
+      height: 320px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    .axis-diagram-container.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .axis-line-h, .axis-line-v {
+      position: absolute;
+      background: #4a5568;
+      border: 2px solid #a0aec0;
+      border-radius: 4px;
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .axis-line-h {
+      height: 16px;
+      width: 0px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .axis-line-v {
+      width: 16px;
+      height: 0px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .axis-line-h.expanded { width: 360px; }
+    .axis-line-v.expanded { height: 260px; }
+
+    .arrow-head {
+      position: absolute;
+      width: 0;
+      height: 0;
+      opacity: 0;
+      transition: opacity 0.4s ease 0.4s;
+    }
+
+    .arrow-left { border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-right: 18px solid #a0aec0; left: -16px; top: -4px; }
+    .arrow-right { border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 18px solid #a0aec0; right: -16px; top: -4px; }
+    .arrow-top { border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 18px solid #a0aec0; top: -16px; left: -4px; }
+    .arrow-bottom { border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 18px solid #a0aec0; bottom: -16px; left: -4px; }
+
+    .expanded .arrow-head { opacity: 1; }
+
+    .diagram-label {
+      position: absolute;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      opacity: 0;
+      transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
+    }
+
+    .label-left { color: #10b981; left: 10px; top: 50%; transform: translateY(-50%) translateX(-20px); }
+    .label-right { color: #ef4444; right: 10px; top: 50%; transform: translateY(-50%) translateX(20px); }
+    .label-top { color: #f59e0b; top: 5px; left: 50%; transform: translateX(-50%) translateY(-20px); }
+    .label-bottom { color: #3b82f6; bottom: 5px; left: 50%; transform: translateX(-50%) translateY(20px); }
+
+    .diagram-label.visible {
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+    .label-top.visible, .label-bottom.visible {
+      transform: translate(-50%, 0);
+    }
+
     .grid-container {
       display: grid;
       grid-template-columns: repeat(3, 150px);
       grid-template-rows: repeat(3, 105px);
       gap: 14px;
+      transition: opacity 0.5s ease;
     }
 
     /* 宮格卡片 */
@@ -236,21 +319,20 @@
       background: rgba(239, 68, 68, 0.15);
     }
 
-    /* 特寫說明卡片面板：改為鮮明淡黃底色搭配紅黑字 */
+    /* 特寫說明卡片面板：莫蘭迪色系 + 深灰文字 */
     .feature-card {
       position: absolute;
       width: 460px;
-      background: #fef08a; /* 鮮明淡黃底色 */
-      border: 2px solid #eab308;
       border-radius: 16px;
       padding: 24px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(254, 240, 138, 0.5);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
       z-index: 30;
       opacity: 0;
       transform: scale(0.9) translateY(20px);
       pointer-events: none;
-      transition: all 0.5s ease;
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
       text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .feature-card.visible {
@@ -263,27 +345,32 @@
       font-family: 'Noto Serif TC', serif;
       font-size: 1.8rem;
       font-weight: 700;
-      color: #dc2626; /* 鮮紅色標題 */
+      color: #18181b; /* 深石灰 */
       margin-bottom: 6px;
     }
 
     .feature-card .tag {
       display: inline-block;
-      padding: 4px 12px;
-      background: #fef3c7;
-      border: 1px solid #fde047;
+      padding: 4px 14px;
       border-radius: 20px;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       font-weight: 700;
-      color: #b91c1c; /* 暗紅色標籤字 */
       margin-bottom: 10px;
+      background: rgba(255, 255, 255, 0.6);
+      color: #27272a;
     }
 
     .feature-card p {
       font-size: 0.98rem;
-      color: #1c1917; /* 深黑色內文 */
-      line-height: 1.55;
+      color: #27272a; /* 深灰內文 */
+      line-height: 1.6;
       font-weight: 500;
+    }
+
+    .feature-card .coords-line {
+      margin-bottom: 10px;
+      font-weight: 700;
+      font-size: 0.92rem;
     }
 
     /* 播放控制列 */
@@ -379,7 +466,7 @@
   <div class="stage">
     
     <!-- 右上角低調版本編號 -->
-    <div class="version-tag">v1.02</div>
+    <div class="version-tag">v1.03</div>
 
     <!-- 右上網頁連結 -->
     <a href="https://euhuang2.github.io/Music_9_Grids/" target="_blank" class="link-badge">
@@ -398,16 +485,34 @@
       </div>
     </div>
 
-    <!-- 主視覺九宮格 -->
+    <!-- 主視覺區域 -->
     <div class="viewport">
       
+      <!-- 雙軸展開展示動畫元件 -->
+      <div class="axis-diagram-container" id="axisDiagram">
+        <div class="axis-line-h" id="lineH">
+          <div class="arrow-head arrow-left"></div>
+          <div class="arrow-head arrow-right"></div>
+        </div>
+        <div class="axis-line-v" id="lineV">
+          <div class="arrow-head arrow-top"></div>
+          <div class="arrow-head arrow-bottom"></div>
+        </div>
+
+        <div class="diagram-label label-left" id="lblLeft">輕柔</div>
+        <div class="diagram-label label-right" id="lblRight">強烈</div>
+        <div class="diagram-label label-top" id="lblTop">愉悅</div>
+        <div class="diagram-label label-bottom" id="lblBottom">悲沈</div>
+      </div>
+
+      <!-- 九宮格元件 -->
       <div class="grid-wrapper" id="gridWrapper">
         <div class="axis-tag tag-top">▲ 愉悅</div>
         <div class="axis-tag tag-bottom">▼ 悲沈</div>
         <div class="axis-tag tag-left">◄ 輕柔</div>
         <div class="axis-tag tag-right">強烈 ►</div>
 
-        <div class="grid-container">
+        <div class="grid-container" id="gridContainer">
           <div class="cell" id="c1">
             <div class="title">輕鬆愉悅</div>
             <div class="coords">輕柔 × 愉悅</div>
@@ -447,11 +552,11 @@
         </div>
       </div>
 
-      <!-- 特寫說明卡片面板（Pop-up 卡片） -->
+      <!-- 特寫說明卡片面板（Pop-up 卡片 - 莫蘭迪風格） -->
       <div class="feature-card" id="featureCard">
         <div class="tag" id="featureTag">宮格深度解析</div>
         <h2 id="featureTitle">語境名稱</h2>
-        <p style="margin-bottom: 8px; color: #dc2626; font-weight: 700;" id="featureCoords">座標：---</p>
+        <div class="coords-line" id="featureCoords">座標：---</div>
         <p id="featureDesc">說明文字載入中...</p>
       </div>
 
@@ -470,52 +575,81 @@
   </div>
 
   <script>
+    // 各宮格莫蘭迪色系配置
+    const morandiStyles = {
+      c1: { bg: '#dbece5', highlight: '#0f766e', tagBg: '#c3e2d4' }, // 莫蘭迪薄荷綠
+      c2: { bg: '#fef3c7', highlight: '#d97706', tagBg: '#fde68a' }, // 莫蘭迪柔黃
+      c3: { bg: '#fee2e2', highlight: '#dc2626', tagBg: '#fca5a5' }, // 莫蘭迪暖紅
+      c4: { bg: '#e0f2fe', highlight: '#0284c7', tagBg: '#bae6fd' }, // 莫蘭迪天藍
+      c5: { bg: '#f3e8ff', highlight: '#7c3aed', tagBg: '#e9d5ff' }, // 莫蘭迪柔紫
+      c6: { bg: '#ffedd5', highlight: '#ea580c', tagBg: '#fed7aa' }, // 莫蘭迪暖橙
+      c7: { bg: '#e2e8f0', highlight: '#475569', tagBg: '#cbd5e1' }, // 莫蘭迪霧灰藍
+      c8: { bg: '#e0e7ff', highlight: '#4338ca', tagBg: '#c7d2fe' }, // 莫蘭迪靛藍
+      c9: { bg: '#f1f5f9', highlight: '#334155', tagBg: '#e2e8f0' }  : // 莫蘭迪深石灰
+    };
+
     const slideData = [
       {
         title: "音樂九宮格：聽覺情緒的立體地圖",
         caption: "歡迎體驗「音樂九宮格」，透過極簡的雙軸架構，為抽象的聽覺感受找到精確的心情座標。",
         setup: () => {
+          showAxisDiagram(false);
           showFeatureCard(false);
+          setGridVisible(true);
           resetCells(0.25);
         }
       },
       {
-        title: "音樂九宮格：雙軸交會定位法",
-        caption: "以「樂曲張力」為橫軸（輕柔➔強烈），以「情感調性」為縱軸（愉悅➔悲沈），交織出九大聽覺語境。",
+        title: "聽音樂的兩個感受面向：橫軸動態",
+        caption: "第一面向為「樂曲張力」橫軸：從左側的「輕柔」漸進延展至右側的「強烈」。",
         setup: () => {
           showFeatureCard(false);
-          resetCells(0.25);
-          highlight(['c1', 'c2', 'c3'], 'highlight-yellow');
-          highlight(['c7', 'c8', 'c9'], 'highlight-blue');
+          setGridVisible(false);
+          showAxisDiagram(true, 'horizontal');
+        }
+      },
+      {
+        title: "聽音樂的兩個感受面向：縱軸調性",
+        caption: "第二面向加入「情感調性」縱軸：從上方的「愉悅」向下延伸至底部的「悲沈」，構建出完整座標系。",
+        setup: () => {
+          showFeatureCard(false);
+          setGridVisible(false);
+          showAxisDiagram(true, 'both');
         }
       },
       {
         title: "宮格導覽 1/9：右上角",
-        caption: "位於右上角的「振奮激昂」，具備強烈的打擊樂與銅管重音，展現出勝利與英雄般的昂揚能量。",
+        caption: "位於右上角的「振奮激昂」，具備強烈的動態對比與躍動重音，展現出勝利與英雄般的昂揚能量。",
         setup: () => {
+          showAxisDiagram(false);
+          setGridVisible(true);
           resetCells(0.15);
           highlight(['c3'], 'highlight-yellow');
-          setFeatureCardData("宮格 1/9：右上角", "振奮激昂", "強烈 (Intense) × 愉悅 (Joyful)", "明亮輝煌的管弦樂全奏，具備無與倫比的推進力、勝利感與高亢張力。");
+          setFeatureCardData('c3', "宮格 1/9：右上角", "振奮激昂", "強烈 (Intense) × 愉悅 (Joyful)", "明亮輝煌的宏大聲響與躍動節奏，具備無與倫比的推進力、勝利感與高亢能量。");
           showFeatureCard(true);
         }
       },
       {
         title: "宮格導覽 2/9：右中",
-        caption: "位於右中的「雄偉莊嚴」，帶有浩瀚宏大的管弦架構，展現出崇高、威嚴與歷史厚重感。",
+        caption: "位於右中的「雄偉莊嚴」，帶有浩瀚宏大的音樂結構，展現出崇高、威嚴與歷史厚重感。",
         setup: () => {
+          showAxisDiagram(false);
+          setGridVisible(true);
           resetCells(0.15);
           highlight(['c6'], 'highlight-yellow');
-          setFeatureCardData("宮格 2/9：右中", "雄偉莊嚴", "強烈 (Intense) × 中庸 (Moderate)", "氣勢磅礴的樂曲結構，展現沉穩而不失權威的宏大氣象。");
+          setFeatureCardData('c6', "宮格 2/9：右中", "雄偉莊嚴", "強烈 (Intense) × 中庸 (Moderate)", "氣勢磅礴的層次堆疊，展現沉穩而不失權威與尊榮的宏大氣象。");
           showFeatureCard(true);
         }
       },
       {
         title: "宮格導覽 3/9：右下角",
-        caption: "位於右下角的「壯烈凝重」，融合了管弦樂重音與命運主題，呈現命運抗爭的撼動力量。",
+        caption: "位於右下角的「壯烈凝重」，融合了極具撼動力的重音與命運主題，呈現命運抗爭的深沉力量。",
         setup: () => {
+          showAxisDiagram(false);
+          setGridVisible(true);
           resetCells(0.15);
           highlight(['c9'], 'highlight-red');
-          setFeatureCardData("宮格 3/9：右下角", "壯烈凝重", "強烈 (Intense) × 悲沈 (Somber)", "九宮格中張力最強烈的極致區塊，結合深沉悲劇色彩與命運交響的震撼感。");
+          setFeatureCardData('c9', "宮格 3/9：右下角", "壮烈凝重", "強烈 (Intense) × 悲沈 (Somber)", "九宮格中張力最強烈的極致區塊，結合深沉悲劇色彩與命運交響般的震撼感。");
           showFeatureCard(true);
         }
       },
@@ -523,9 +657,11 @@
         title: "宮格導覽 4/9：中上",
         caption: "位於中上的「活潑暢意」，節奏明快跳躍，充滿靈動與歡欣的日常生氣。",
         setup: () => {
+          showAxisDiagram(false);
+          setGridVisible(true);
           resetCells(0.15);
           highlight(['c2'], 'highlight-yellow');
-          setFeatureCardData("宮格 4/9：中上", "活潑暢意", "中庸 (Moderate) × 愉悅 (Joyful)", "流暢輕快的快板節奏，帶有明亮的嬉戲感與奔放活力。");
+          setFeatureCardData('c2', "宮格 4/9：中上", "活潑暢意", "中庸 (Moderate) × 愉悅 (Joyful)", "流暢輕快的快板節律，帶有明亮的嬉戲感與奔放活力。");
           showFeatureCard(true);
         }
       },
@@ -533,9 +669,11 @@
         title: "宮格導覽 5/9：正中心",
         caption: "位於正中心的「中庸從容」，是古典美學的平衡典範，不疾不徐，展現優雅沉穩的和諧樂音。",
         setup: () => {
+          showAxisDiagram(false);
+          setGridVisible(true);
           resetCells(0.15);
           highlight(['c5'], 'focus');
-          setFeatureCardData("宮格 5/9：正中心", "中庸從容", "中庸 (Moderate) × 中庸 (Moderate)", "九宮格的基準核心，結構勻稱、張力適中，展現平靜自信的優雅氣度。");
+          setFeatureCardData('c5', "宮格 5/9：正中心", "中庸從容", "中庸 (Moderate) × 中庸 (Moderate)", "九宮格的基準核心，結構勻稱、張力適中，展現平靜自信的優雅氣度。");
           showFeatureCard(true);
         }
       },
@@ -543,9 +681,11 @@
         title: "宮格導覽 6/9：中下",
         caption: "位於中下的「深沈濃郁」，具備極為豐富的情感層次，帶有強烈的渲染力與生命沉澱感。",
         setup: () => {
+          showAxisDiagram(false);
+          setGridVisible(true);
           resetCells(0.15);
           highlight(['c8'], 'highlight-blue');
-          setFeatureCardData("宮格 6/9：中下", "深沈濃郁", "中庸 (Moderate) × 悲沈 (Somber)", "低音弦樂群與和聲交織出極具厚度的情感，飽含敘事深度的感悟。");
+          setFeatureCardData('c8', "宮格 6/9：中下", "深沈濃郁", "中庸 (Moderate) × 悲沈 (Somber)", "低音域與豐富和聲交織出極具厚度的情感，飽含敘事深度的感悟。");
           showFeatureCard(true);
         }
       },
@@ -553,9 +693,11 @@
         title: "宮格導覽 7/9：左上角",
         caption: "位於左上角的「輕鬆愉悅」，帶來如微風般輕盈優雅的旋律，能瞬間撫平焦慮、沉澱心靈。",
         setup: () => {
+          showAxisDiagram(false);
+          setGridVisible(true);
           resetCells(0.15);
           highlight(['c1'], 'highlight-green');
-          setFeatureCardData("宮格 7/9：左上角", "輕鬆愉悅", "輕柔 (Soft) × 愉悅 (Joyful)", "充滿透明感的輕柔線條，配器清亮，帶來毫無壓力的溫暖情緒。");
+          setFeatureCardData('c1', "宮格 7/9：左上角", "輕鬆愉悅", "輕柔 (Soft) × 愉悅 (Joyful)", "充滿透明感的輕柔線條，音色清亮，帶來毫無壓力的溫暖情緒。");
           showFeatureCard(true);
         }
       },
@@ -563,9 +705,11 @@
         title: "宮格導覽 8/9：左中",
         caption: "位於左中的「悠揚舒緩」，音符如流水般平緩漫延，適合放鬆沉思與陪伴日常。",
         setup: () => {
+          showAxisDiagram(false);
+          setGridVisible(true);
           resetCells(0.15);
           highlight(['c4'], 'highlight-green');
-          setFeatureCardData("宮格 8/9：左中", "悠揚舒緩", "輕柔 (Soft) × 中庸 (Moderate)", "長線條的慢板旋律，氣氛安詳寧靜，提供極具療癒感的心靈包覆。");
+          setFeatureCardData('c4', "宮格 8/9：左中", "悠揚舒緩", "輕柔 (Soft) × 中庸 (Moderate)", "長線條的舒緩旋律，氣氛安詳寧靜，提供極具療癒感的心靈包覆。");
           showFeatureCard(true);
         }
       },
@@ -573,9 +717,11 @@
         title: "宮格導覽 9/9：左下角",
         caption: "位於左下角的「低迴沉吟」，表現微弱而深情的低語，蘊含內斂的傷感，適合深夜獨處品味。",
         setup: () => {
+          showAxisDiagram(false);
+          setGridVisible(true);
           resetCells(0.15);
           highlight(['c7'], 'highlight-blue');
-          setFeatureCardData("宮格 9/9：左下角", "低迴沉吟", "輕柔 (Soft) × 悲沈 (Somber)", "極度細膩的單獨樂器表情，微弱卻深刻，觸動心靈最深處的私密共鳴。");
+          setFeatureCardData('c7', "宮格 9/9：左下角", "低迴沉吟", "輕柔 (Soft) × 悲沈 (Somber)", "極度細膩的私密表情，微弱卻深刻，觸動心靈最深處的靜謐共鳴。");
           showFeatureCard(true);
         }
       },
@@ -583,6 +729,8 @@
         title: "音樂九宮格：探索屬於你的情緒旋律",
         caption: "完整九宮格地圖呈現！點擊任一宮格即可連動 Spotify 隨機播放對應曲風，歡迎線上體驗！",
         setup: () => {
+          showAxisDiagram(false);
+          setGridVisible(true);
           showFeatureCard(false);
           resetCells(1);
           highlight(['c1','c2','c3','c4','c5','c6','c7','c8','c9'], 'focus');
@@ -592,7 +740,7 @@
 
     let currentIndex = 0;
     let isPlaying = true;
-    let duration = 12000; // 自動播放時間設定為 12 秒
+    let duration = 12000; // 12秒輪播
     let startTime = Date.now();
 
     const titleEl = document.getElementById('title');
@@ -607,6 +755,47 @@
     const featureCoords = document.getElementById('featureCoords');
     const featureDesc = document.getElementById('featureDesc');
     const gridWrapper = document.getElementById('gridWrapper');
+    const axisDiagram = document.getElementById('axisDiagram');
+    const lineH = document.getElementById('lineH');
+    const lineV = document.getElementById('lineV');
+    const lblLeft = document.getElementById('lblLeft');
+    const lblRight = document.getElementById('lblRight');
+    const lblTop = document.getElementById('lblTop');
+    const lblBottom = document.getElementById('lblBottom');
+
+    function setGridVisible(visible) {
+      gridWrapper.style.opacity = visible ? '1' : '0';
+      gridWrapper.style.pointerEvents = visible ? 'auto' : 'none';
+    }
+
+    function showAxisDiagram(show, mode = 'horizontal') {
+      if (show) {
+        axisDiagram.classList.add('visible');
+        if (mode === 'horizontal') {
+          lineH.classList.add('expanded');
+          lineV.classList.remove('expanded');
+          lblLeft.classList.add('visible');
+          lblRight.classList.add('visible');
+          lblTop.classList.remove('visible');
+          lblBottom.classList.remove('visible');
+        } else if (mode === 'both') {
+          lineH.classList.add('expanded');
+          lineV.classList.add('expanded');
+          lblLeft.classList.add('visible');
+          lblRight.classList.add('visible');
+          lblTop.classList.add('visible');
+          lblBottom.classList.add('visible');
+        }
+      } else {
+        axisDiagram.classList.remove('visible');
+        lineH.classList.remove('expanded');
+        lineV.classList.remove('expanded');
+        lblLeft.classList.remove('visible');
+        lblRight.classList.remove('visible');
+        lblTop.classList.remove('visible');
+        lblBottom.classList.remove('visible');
+      }
+    }
 
     function resetCells(opacity = 0.25) {
       document.querySelectorAll('.cell').forEach(cell => {
@@ -623,10 +812,15 @@
       });
     }
 
-    function setFeatureCardData(tag, title, coords, desc) {
+    function setFeatureCardData(cellId, tag, title, coords, desc) {
+      const style = morandiStyles[cellId] || { bg: '#f1f5f9', highlight: '#000', tagBg: '#e2e8f0' };
+      featureCard.style.backgroundColor = style.bg;
       featureTag.innerText = tag;
+      featureTag.style.backgroundColor = style.tagBg;
+      featureTag.style.color = style.highlight;
       featureTitle.innerText = title;
       featureCoords.innerText = `座標：${coords}`;
+      featureCoords.style.color = style.highlight;
       featureDesc.innerText = desc;
     }
 
