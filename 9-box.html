@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>音樂九宮格 - v1.09 動畫簡報</title>
+  <title>音樂九宮格 - v1.10 動畫簡報</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
@@ -94,7 +94,7 @@
     }
 
     .header h1 {
-      font-size: 2.2rem;
+      font-size: clamp(1.4rem, 2.5vw, 2.2rem);
       font-family: 'Noto Serif TC', serif;
       font-weight: 700;
       color: var(--text-main);
@@ -102,6 +102,7 @@
       margin-top: 5px;
       margin-bottom: 12px;
       text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      white-space: nowrap;
     }
 
     .subtitle-box {
@@ -123,7 +124,7 @@
     }
 
     .subtitle-text {
-      font-size: 1rem;
+      font-size: clamp(0.85rem, 1.5vw, 1rem);
       color: #e2e8f0;
       line-height: 1.35;
       font-weight: 400;
@@ -146,6 +147,7 @@
       transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
     }
 
+    /* 軸線標籤 - 橫軸水平化修正 */
     .axis-tag {
       position: absolute;
       font-size: 1.5rem;
@@ -153,12 +155,14 @@
       letter-spacing: 2px;
       transition: all 0.5s ease;
       opacity: 0.9;
+      white-space: nowrap;
     }
 
     .tag-top { top: -5px; left: 50%; transform: translateX(-50%); color: var(--accent-yellow); }
     .tag-bottom { bottom: -5px; left: 50%; transform: translateX(-50%); color: var(--accent-blue); }
-    .tag-left { left: -35px; top: 50%; transform: translateY(-50%) rotate(-90deg); color: var(--accent-green); }
-    .tag-right { right: -35px; top: 50%; transform: translateY(-50%) rotate(90deg); color: var(--accent-red); }
+    /* 水平文字方向 */
+    .tag-left { left: -65px; top: 50%; transform: translateY(-50%); color: var(--accent-green); }
+    .tag-right { right: -65px; top: 50%; transform: translateY(-50%); color: var(--accent-red); }
 
     .axis-diagram-container {
       position: absolute;
@@ -201,10 +205,11 @@
       letter-spacing: 2px;
       opacity: 0;
       transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
+      white-space: nowrap;
     }
 
-    .label-left { color: #10b981; left: 25px; top: 50%; transform: translateY(-50%) translateX(-20px); }
-    .label-right { color: #ef4444; right: 25px; top: 50%; transform: translateY(-50%) translateX(20px); }
+    .label-left { color: #10b981; left: 15px; top: 50%; transform: translateY(-50%) translateX(-20px); }
+    .label-right { color: #ef4444; right: 15px; top: 50%; transform: translateY(-50%) translateX(20px); }
     .label-top { color: #f59e0b; top: 15px; left: 50%; transform: translateX(-50%) translateY(-20px); }
     .label-bottom { color: #3b82f6; bottom: 15px; left: 50%; transform: translateX(-50%) translateY(20px); }
 
@@ -285,9 +290,11 @@
     .ctrl-btn:hover { color: var(--accent-gold); }
     .progress-bar-container { width: 220px; height: 4px; background: rgba(255, 255, 255, 0.15); border-radius: 2px; overflow: hidden; cursor: pointer; }
     .progress-bar { height: 100%; width: 0%; background: var(--accent-gold); transition: width 0.1s linear; }
+    
     .version-tag { position: absolute; top: 10px; right: 35px; font-size: 0.75rem; font-family: 'Montserrat', monospace; color: var(--accent-gold); opacity: 0.4; letter-spacing: 1px; z-index: 20; pointer-events: none; }
     .link-badge { position: absolute; top: 30px; right: 35px; z-index: 20; display: flex; align-items: center; gap: 8px; padding: 6px 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 20px; color: var(--text-sub); text-decoration: none; font-size: 0.8rem; transition: all 0.3s ease; }
     .link-badge:hover { background: rgba(212, 175, 55, 0.15); border-color: var(--accent-gold); color: var(--accent-gold); }
+
     .replay-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
     .replay-modal.visible { opacity: 1; pointer-events: auto; }
     .replay-box { background: rgba(15, 23, 42, 0.95); border: 1px solid var(--accent-gold); box-shadow: 0 0 30px var(--glow-gold); border-radius: 16px; padding: 30px 45px; text-align: center; transform: scale(0.9); transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -299,13 +306,96 @@
     .btn-yes:hover { background: #f59e0b; transform: translateY(-2px); }
     .btn-no { background: rgba(255, 255, 255, 0.1); color: var(--text-sub); border-color: rgba(255, 255, 255, 0.2); }
     .btn-no:hover { background: rgba(255, 255, 255, 0.2); color: var(--text-main); transform: translateY(-2px); }
+
+    /* =========================================================
+       手機直式（Portrait）RWD 響應式優化
+       ========================================================= */
+    @media (max-width: 768px) {
+      body { padding: 10px; }
+      .stage {
+        width: 100vw;
+        height: 95vh;
+        padding: 12px 15px 12px 15px;
+        border-radius: 12px;
+      }
+
+      /* 頁首獨立與防擠壓 */
+      .version-tag { top: 8px; right: 15px; font-size: 0.65rem; }
+      .link-badge { top: 8px; left: 15px; right: auto; padding: 4px 10px; font-size: 0.72rem; }
+
+      .header { margin-top: 25px; }
+      .header h1 { font-size: 1.25rem; margin-bottom: 6px; }
+      .subtitle-box { padding: 6px 14px; min-height: 38px; }
+      .subtitle-text { font-size: 0.8rem; line-height: 1.25; }
+
+      /* 開場模式直式調整 */
+      .stage.intro-mode .header { padding: 0 20px; }
+      .stage.intro-mode .header h1 { font-size: 1.8rem; margin-bottom: 15px; white-space: normal; }
+      .stage.intro-mode .subtitle-box { padding: 12px 20px; font-size: 1rem; }
+
+      /* 視埠與九宮格緊湊縮放 */
+      .viewport { flex-direction: column; justify-content: flex-start; margin-top: 10px; }
+      .grid-wrapper { padding: 22px 10px; transform-origin: top center; }
+      .grid-container {
+        grid-template-columns: repeat(3, 100px);
+        grid-template-rows: repeat(3, 68px);
+        gap: 8px;
+      }
+
+      .cell .title { font-size: 0.95rem; margin-bottom: 2px; }
+      .cell .coords { font-size: 0.55rem; }
+
+      /* 軸線標籤手機微調 */
+      .axis-tag { font-size: 0.95rem; }
+      .tag-top { top: -2px; }
+      .tag-bottom { bottom: -2px; }
+      .tag-left { left: -42px; }
+      .tag-right { right: -42px; }
+
+      /* 解析卡片於手機端直式呈現：轉置為上方九宮格、下方解析卡片 */
+      .feature-card {
+        position: relative;
+        right: auto;
+        left: auto;
+        top: 0;
+        width: 100%;
+        max-width: 330px;
+        padding: 12px 16px;
+        margin-top: -10px;
+        transform: scale(0.95) translateY(10px);
+      }
+
+      /* 箭頭改為向上指向 */
+      .feature-card::before {
+        left: 50% !important;
+        top: -12px !important;
+        transform: translateX(-50%) !important;
+        border-left: 10px solid transparent !important;
+        border-right: 10px solid transparent !important;
+        border-bottom: 12px solid var(--pointer-color, #f1f5f9) !important;
+        border-top: none !important;
+      }
+
+      .feature-card.visible {
+        transform: scale(1) translateY(0);
+      }
+
+      .feature-card h2 { font-size: 1.25rem; margin-bottom: 2px; }
+      .feature-card .tag { font-size: 0.7rem; padding: 2px 10px; margin-bottom: 6px; }
+      .feature-card .coords-line { font-size: 0.78rem; margin-bottom: 6px; }
+      .feature-card p { font-size: 0.8rem; line-height: 1.4; }
+
+      /* 控制列直式居中 */
+      .controls { bottom: 8px; padding: 3px 12px; gap: 10px; }
+      .progress-bar-container { width: 140px; }
+    }
   </style>
 </head>
 <body>
 
-  <div class="stage" id="mainStage">
-    <div class="version-tag">v1.09</div>
-    <a href="https://euhuang2.github.io/Music_9_Grids/" target="_blank" class="link-badge"><i class="fa-solid fa-globe"></i> 回到九宮格播放器</a>
+  <div class="stage intro-mode" id="mainStage">
+    <div class="version-tag">v1.10</div>
+    <a href="https://euhuang2.github.io/Music_9_Grids/" target="_blank" class="link-badge"><i class="fa-solid fa-globe"></i> 播放器</a>
 
     <div class="header">
       <h1 id="title">音樂九宮格：聽覺情緒的立體地圖</h1>
@@ -400,8 +490,8 @@
         }
       },
       {
-        title: "聽音樂的兩個感受面向：橫軸動態",
-        caption: "第一面向為「樂曲張力」橫軸：從左側的「輕柔」漸進延展至右側的「強烈」。",
+        title: "聽音樂的兩個感受面向：強弱動態",
+        caption: "第一面向為「強弱動態」橫軸：從左側的「輕柔」漸進延展至右側的「強烈」。",
         duration: 8000,
         setup: () => {
           showFeatureCard(false);
@@ -410,8 +500,8 @@
         }
       },
       {
-        title: "聽音樂的兩個感受面向：縱軸情感",
-        caption: "第二面向加入「縱軸情感」：從上方的「愉悅」向下延伸至底部的「悲沈」。",
+        title: "聽音樂的兩個感受面向：情緒色彩",
+        caption: "第二面向加入「情緒色彩」縱軸：從上方的「愉悅」向下延伸至底部的「悲沈」。",
         duration: 8000,
         setup: () => {
           showFeatureCard(false);
@@ -420,8 +510,8 @@
         }
       },
       {
-        title: "交織構建：完整的九種音樂情緒九宮格",
-        caption: "雙軸交會劃分出九種獨特的情緒語境，呈現完整的聽覺情緒光譜。",
+        title: "交織構建：九種對音樂聆聽感受的九宮格",
+        caption: "雙軸交會劃分出九種獨特的感受語境，呈現完整的聽覺感受光譜。",
         duration: 10000,
         setup: () => {
           showAxisDiagram(false);
@@ -433,7 +523,7 @@
             cell.style.opacity = '0';
             cell.style.transform = 'scale(0.8)';
           });
-          gridWrapper.style.transform = 'scale(1)';
+          gridWrapper.style.transform = window.innerWidth <= 768 ? 'scale(1)' : 'scale(1)';
 
           if (revealTimer) clearInterval(revealTimer);
           let seqIndex = 0;
@@ -655,7 +745,7 @@
         cell.style.opacity = opacity;
         cell.style.transform = 'scale(1)';
       });
-      gridWrapper.style.transform = 'scale(1)';
+      gridWrapper.style.transform = window.innerWidth <= 768 ? 'scale(1) translateX(0)' : 'scale(1) translateX(0)';
     }
 
     function highlight(ids, className) {
@@ -670,18 +760,22 @@
       featureCard.style.backgroundColor = style.bg;
       featureCard.style.setProperty('--pointer-color', style.bg);
       
-      let pointerYPercent = '50%';
-      if (style.row === 1) pointerYPercent = '25%';
-      else if (style.row === 3) pointerYPercent = '75%';
-      featureCard.style.setProperty('--pointer-y', pointerYPercent);
+      const isMobile = window.innerWidth <= 768;
 
-      let arrowWidth = '14px';
-      let arrowOffset = '-14px';
-      if (style.col === 2) { arrowWidth = '145px'; arrowOffset = '-145px'; } 
-      else if (style.col === 1) { arrowWidth = '280px'; arrowOffset = '-280px'; }
+      if (!isMobile) {
+        let pointerYPercent = '50%';
+        if (style.row === 1) pointerYPercent = '25%';
+        else if (style.row === 3) pointerYPercent = '75%';
+        featureCard.style.setProperty('--pointer-y', pointerYPercent);
 
-      featureCard.style.setProperty('--pointer-width', arrowWidth);
-      featureCard.style.setProperty('--pointer-x-offset', arrowOffset);
+        let arrowWidth = '14px';
+        let arrowOffset = '-14px';
+        if (style.col === 2) { arrowWidth = '145px'; arrowOffset = '-145px'; } 
+        else if (style.col === 1) { arrowWidth = '280px'; arrowOffset = '-280px'; }
+
+        featureCard.style.setProperty('--pointer-width', arrowWidth);
+        featureCard.style.setProperty('--pointer-x-offset', arrowOffset);
+      }
 
       featureTag.innerText = tag;
       featureTag.style.backgroundColor = style.tagBg;
@@ -693,9 +787,12 @@
     }
 
     function showFeatureCard(show) {
+      const isMobile = window.innerWidth <= 768;
       if (show) {
         featureCard.classList.add('visible');
-        gridWrapper.style.transform = 'scale(0.85) translateX(-240px)';
+        if (!isMobile) {
+          gridWrapper.style.transform = 'scale(0.85) translateX(-240px)';
+        }
       } else {
         featureCard.classList.remove('visible');
         gridWrapper.style.transform = 'scale(1) translateX(0)';
@@ -703,7 +800,6 @@
     }
 
     function renderSlide(index) {
-      // 移除 intro-mode (只在第一頁生效)
       if (index !== 0) {
         mainStage.classList.remove('intro-mode');
       }
@@ -780,6 +876,26 @@
       renderSlide(currentIndex);
     });
 
+    // 點擊進度條跳轉
+    document.getElementById('progressContainer').addEventListener('click', (e) => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const ratio = clickX / rect.width;
+      
+      showReplayModal(false);
+      currentIndex = Math.min(Math.floor(ratio * slideData.length), slideData.length - 1);
+      progressBar.style.width = '0%';
+      renderSlide(currentIndex);
+    });
+
+    // 視窗尺寸改變時自動適應布局
+    window.addEventListener('resize', () => {
+      if (currentIndex >= 4 && currentIndex <= 12) {
+        showFeatureCard(true);
+      }
+    });
+
+    // 初始化啟動
     renderSlide(0);
     requestAnimationFrame(updateProgress);
   </script>
