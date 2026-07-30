@@ -412,7 +412,7 @@
     </style>
 </head>
 <body>
-    <div class="version-tag">v1.23</div>
+    <div class="version-tag">v1.24</div>
 
     <section class="view-section">
         <header>
@@ -488,9 +488,8 @@
         ];
 
         const controllers = new Map();
-        // 紀錄各個宮格被播放過的次數，以利推進新曲目
-        const gridPlayCounts = new Map();
-        musicGrids.forEach(g => gridPlayCounts.set(g.id, 0));
+        const gridPlayIndexMap = new Map(); // 記錄每個宮格已經播放到了第幾首
+        musicGrids.forEach(g => gridPlayIndexMap.set(g.id, 0));
 
         let isShuffleActive = false;
         let shuffleHistory = [];
@@ -504,35 +503,30 @@
             });
         }
 
-        function playGridTarget(gridItem, isNewSelection = false) {
+        function playGridTarget(item, isNewStep = false) {
             const targetText = document.getElementById('now-playing-target');
             const prevBtn = document.getElementById('prev-track-btn');
 
-            targetText.innerText = gridItem.titleZh;
+            targetText.innerText = item.grid.titleZh;
             prevBtn.disabled = (historyIndex <= 0);
 
-            stopAllOthers(gridItem.id);
-            const targetCtrl = controllers.get(gridItem.id);
-            
+            stopAllOthers(item.grid.id);
+            const targetCtrl = controllers.get(item.grid.id);
+
             if (targetCtrl) {
-                const currentCount = gridPlayCounts.get(gridItem.id) || 0;
-                
-                // 若這是一個新的隨機挑選且之前已經播放過此宮格，強制切換至該清單的下一首
-                if (isNewSelection && currentCount > 0) {
+                if (isNewStep) {
+                    // 強制讓特定播放清單切換到全新下一首曲目
                     try {
                         targetCtrl.next();
                     } catch(e) {}
                 }
-
-                gridPlayCounts.set(gridItem.id, currentCount + 1);
-
+                
                 setTimeout(() => {
                     try { targetCtrl.play(); } catch(e) {}
-                }, 100);
+                }, 150);
             }
         }
 
-        // 開關隨機播放模式
         function toggleShuffleMode(forceState = null) {
             isShuffleActive = (forceState !== null) ? forceState : !isShuffleActive;
 
@@ -549,8 +543,7 @@
 
                 shuffleHistory = [];
                 historyIndex = -1;
-                // 重置計數
-                musicGrids.forEach(g => gridPlayCounts.set(g.id, 0));
+                musicGrids.forEach(g => gridPlayIndexMap.set(g.id, 0));
 
                 playNextShuffleTrack();
             } else {
@@ -560,7 +553,7 @@
                 banner.classList.remove('is-visible');
 
                 if (historyIndex >= 0 && shuffleHistory[historyIndex]) {
-                    const currentId = shuffleHistory[historyIndex].id;
+                    const currentId = shuffleHistory[historyIndex].grid.id;
                     const activeCtrl = controllers.get(currentId);
                     if (activeCtrl) {
                         try { activeCtrl.pause(); } catch(e){}
@@ -571,42 +564,37 @@
             }
         }
 
-        // 點擊「下一首 ⏭」
         function playNextShuffleTrack() {
             if (!isShuffleActive) return;
 
-            // 若在歷史隊列中間，直接往前讀取歷史
+            // 歷史回溯控制
             if (historyIndex < shuffleHistory.length - 1) {
                 historyIndex++;
                 playGridTarget(shuffleHistory[historyIndex], false);
                 return;
             }
 
-            // 完全隨機選擇：優先選播放次數最少（尚未播放過）的宮格，確保曲目不重複
-            let minCount = Infinity;
-            musicGrids.forEach(g => {
-                const cnt = gridPlayCounts.get(g.id) || 0;
-                if (cnt < minCount) minCount = cnt;
-            });
-
-            // 過濾出目前播放次數最少的宮格組合，並避開當前播放中的宮格
-            let currentId = historyIndex >= 0 ? shuffleHistory[historyIndex].id : null;
-            let candidateGrids = musicGrids.filter(g => (gridPlayCounts.get(g.id) || 0) === minCount && g.id !== currentId);
+            // 挑選下一個宮格 (避開當前播放的宮格，創造跨宮格切換感)
+            let currentGridId = historyIndex >= 0 ? shuffleHistory[historyIndex].grid.id : null;
+            let availableGrids = musicGrids.filter(g => g.id !== currentGridId);
             
-            if (candidateGrids.length === 0) {
-                candidateGrids = musicGrids.filter(g => g.id !== currentId);
-            }
+            const randomGrid = availableGrids[Math.floor(Math.random() * availableGrids.length)];
+            
+            // 記錄該宮格的推進次數
+            let nextTrackIdx = (gridPlayIndexMap.get(randomGrid.id) || 0) + 1;
+            gridPlayIndexMap.set(randomGrid.id, nextTrackIdx);
 
-            const randomIndex = Math.floor(Math.random() * candidateGrids.length);
-            const randomGrid = candidateGrids[randomIndex];
+            const historyItem = {
+                grid: randomGrid,
+                trackIndex: nextTrackIdx
+            };
 
-            shuffleHistory.push(randomGrid);
+            shuffleHistory.push(historyItem);
             historyIndex = shuffleHistory.length - 1;
 
-            playGridTarget(randomGrid, true);
+            playGridTarget(historyItem, true);
         }
 
-        // 點擊「上一首 ⏮」
         function playPrevShuffleTrack() {
             if (!isShuffleActive || historyIndex <= 0) return;
 
@@ -686,7 +674,7 @@
 
                 const callback = (EmbedController) => {
                     controllers.set(item.id, EmbedController);
-                    
+
                     EmbedController.addListener('playback_update', e => {
                         if (e.data && !e.data.isPaused) {
                             stopAllOthers(item.id);

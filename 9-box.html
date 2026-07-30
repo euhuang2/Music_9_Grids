@@ -194,7 +194,6 @@
       transform: translate(-50%, -50%);
     }
 
-    /* 修正：將軸線縮短，避免撞到端點文字 */
     .axis-line-h.expanded { width: 280px; }
     .axis-line-v.expanded { height: 200px; }
 
@@ -320,7 +319,7 @@
       background: rgba(239, 68, 68, 0.15);
     }
 
-    /* 特寫說明卡片面板（Pop-up 卡片 - 位於右側並指向九宮格） */
+    /* 特寫說明卡片面板 */
     .feature-card {
       position: absolute;
       right: 110px;
@@ -337,17 +336,19 @@
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
-    /* 特寫面板左側指向箭頭 */
+    /* 特寫面板左側伸展指示箭頭 (支援動態長度) */
     .feature-card::before {
       content: '';
       position: absolute;
-      left: -14px;
+      left: var(--pointer-x-offset, -14px);
       top: var(--pointer-y, 50%);
       transform: translateY(-50%);
+      width: 0;
+      height: 0;
       border-top: 12px solid transparent;
       border-bottom: 12px solid transparent;
-      border-right: 14px solid var(--pointer-color, #f1f5f9);
-      transition: all 0.4s ease;
+      border-right: var(--pointer-width, 14px) solid var(--pointer-color, #f1f5f9);
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .feature-card.visible {
@@ -474,6 +475,91 @@
       border-color: var(--accent-gold);
       color: var(--accent-gold);
     }
+
+    /* 重新播放詢問彈窗 (Modal) */
+    .replay-modal {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .replay-modal.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .replay-box {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--accent-gold);
+      box-shadow: 0 0 30px var(--glow-gold);
+      border-radius: 16px;
+      padding: 30px 45px;
+      text-align: center;
+      transform: scale(0.9);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .replay-modal.visible .replay-box {
+      transform: scale(1);
+    }
+
+    .replay-box h3 {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.5rem;
+      color: var(--text-main);
+      margin-bottom: 25px;
+      letter-spacing: 1px;
+    }
+
+    .replay-btn-group {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      padding: 8px 28px;
+      border-radius: 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      border: 1px solid transparent;
+    }
+
+    .btn-yes {
+      background: var(--accent-gold);
+      color: #0f172a;
+      box-shadow: 0 4px 12px var(--glow-gold);
+    }
+
+    .btn-yes:hover {
+      background: #f59e0b;
+      transform: translateY(-2px);
+    }
+
+    .btn-no {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-sub);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-no:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--text-main);
+      transform: translateY(-2px);
+    }
   </style>
 </head>
 <body>
@@ -481,7 +567,7 @@
   <div class="stage">
     
     <!-- 右上角低調版本編號 -->
-    <div class="version-tag">v1.04</div>
+    <div class="version-tag">v1.05</div>
 
     <!-- 右上網頁連結按鈕 -->
     <a href="https://euhuang2.github.io/Music_9_Grids/" target="_blank" class="link-badge">
@@ -587,23 +673,33 @@
       </div>
     </div>
 
+    <!-- 重新播放彈窗 -->
+    <div class="replay-modal" id="replayModal">
+      <div class="replay-box">
+        <h3>是否重新播放？</h3>
+        <div class="replay-btn-group">
+          <button class="modal-btn btn-yes" id="replayYesBtn">是</button>
+          <button class="modal-btn btn-no" id="replayNoBtn">否</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script>
-    // 各宮格莫蘭迪色系與指向箭頭位置配置 (row: 1=上, 2=中, 3=下)
+    // 各宮格配置（新增 col 欄位：1=左欄, 2=中欄, 3=右欄；row 欄位：1=上, 2=中, 3=下）
     const morandiStyles = {
-      c1: { bg: '#dbece5', highlight: '#0f766e', tagBg: '#c3e2d4', row: 1 },
-      c2: { bg: '#fef3c7', highlight: '#d97706', tagBg: '#fde68a', row: 1 },
-      c3: { bg: '#fee2e2', highlight: '#dc2626', tagBg: '#fca5a5', row: 1 },
-      c4: { bg: '#e0f2fe', highlight: '#0284c7', tagBg: '#bae6fd', row: 2 },
-      c5: { bg: '#f3e8ff', highlight: '#7c3aed', tagBg: '#e9d5ff', row: 2 },
-      c6: { bg: '#ffedd5', highlight: '#ea580c', tagBg: '#fed7aa', row: 2 },
-      c7: { bg: '#e2e8f0', highlight: '#475569', tagBg: '#cbd5e1', row: 3 },
-      c8: { bg: '#e0e7ff', highlight: '#4338ca', tagBg: '#c7d2fe', row: 3 },
-      c9: { bg: '#f1f5f9', highlight: '#334155', tagBg: '#e2e8f0', row: 3 }
+      c1: { bg: '#dbece5', highlight: '#0f766e', tagBg: '#c3e2d4', row: 1, col: 1 },
+      c2: { bg: '#fef3c7', highlight: '#d97706', tagBg: '#fde68a', row: 1, col: 2 },
+      c3: { bg: '#fee2e2', highlight: '#dc2626', tagBg: '#fca5a5', row: 1, col: 3 },
+      c4: { bg: '#e0f2fe', highlight: '#0284c7', tagBg: '#bae6fd', row: 2, col: 1 },
+      c5: { bg: '#f3e8ff', highlight: '#7c3aed', tagBg: '#e9d5ff', row: 2, col: 2 },
+      c6: { bg: '#ffedd5', highlight: '#ea580c', tagBg: '#fed7aa', row: 2, col: 3 },
+      c7: { bg: '#e2e8f0', highlight: '#475569', tagBg: '#cbd5e1', row: 3, col: 1 },
+      c8: { bg: '#e0e7ff', highlight: '#4338ca', tagBg: '#c7d2fe', row: 3, col: 2 },
+      c9: { bg: '#f1f5f9', highlight: '#334155', tagBg: '#e2e8f0', row: 3, col: 3 }
     };
 
-    // 依序漸顯登場的宮格順序（右上 -> 右中 -> 右下 -> 中上 -> 正中 -> 中下 -> 左上 -> 左中 -> 左下）
     const appearSequence = ['c3', 'c6', 'c9', 'c2', 'c5', 'c8', 'c1', 'c4', 'c7'];
     let revealTimer = null;
 
@@ -642,13 +738,12 @@
       {
         title: "交織構建：完整的九種音樂情緒九宮格",
         caption: "雙軸交會劃分出九種獨特的情緒語境，呈現完整的聽覺情緒光譜。",
-        duration: 10000, // 新增頁面停留 10 秒
+        duration: 10000,
         setup: () => {
           showAxisDiagram(false);
           showFeatureCard(false);
           setGridVisible(true);
           
-          // 初始隱藏所有宮格，隨後依序登場
           document.querySelectorAll('.cell').forEach(cell => {
             cell.className = 'cell';
             cell.style.opacity = '0';
@@ -793,7 +888,7 @@
       },
       {
         title: "音樂九宮格：探索屬於你的情緒旋律",
-        caption: "完整九宮格地圖呈現！點擊任一宮格即可連動 Spotify 隨機播放對應曲風，歡迎線上體驗！",
+        caption: "完整九宮格地圖呈現！回到九宮格播放器中點擊任一宮格即可連動 Spotify 隨機播放對應曲風，歡迎線上體驗！",
         duration: 8000,
         setup: () => {
           showAxisDiagram(false);
@@ -829,6 +924,10 @@
     const lblRight = document.getElementById('lblRight');
     const lblTop = document.getElementById('lblTop');
     const lblBottom = document.getElementById('lblBottom');
+    
+    const replayModal = document.getElementById('replayModal');
+    const replayYesBtn = document.getElementById('replayYesBtn');
+    const replayNoBtn = document.getElementById('replayNoBtn');
 
     function setGridVisible(visible) {
       gridWrapper.style.opacity = visible ? '1' : '0';
@@ -882,15 +981,30 @@
     }
 
     function setFeatureCardData(cellId, tag, title, coords, desc) {
-      const style = morandiStyles[cellId] || { bg: '#f1f5f9', highlight: '#000', tagBg: '#e2e8f0', row: 2 };
+      const style = morandiStyles[cellId] || { bg: '#f1f5f9', highlight: '#000', tagBg: '#e2e8f0', row: 2, col: 3 };
       featureCard.style.backgroundColor = style.bg;
       featureCard.style.setProperty('--pointer-color', style.bg);
       
-      // 動態計算指示箭頭的高低位置（對應九宮格的上中下三列）
+      // 動態計算指示箭頭高度 (Y軸)
       let pointerYPercent = '50%';
       if (style.row === 1) pointerYPercent = '25%';
       else if (style.row === 3) pointerYPercent = '75%';
       featureCard.style.setProperty('--pointer-y', pointerYPercent);
+
+      // 動態伸長指示箭頭長度 (X軸)：右欄（標準長）、中欄（加長）、左欄（極長）
+      let arrowWidth = '14px';
+      let arrowOffset = '-14px';
+
+      if (style.col === 2) { // 中欄 (c2, c5, c8)
+        arrowWidth = '145px';
+        arrowOffset = '-145px';
+      } else if (style.col === 1) { // 左欄 (c1, c4, c7)
+        arrowWidth = '280px';
+        arrowOffset = '-280px';
+      }
+
+      featureCard.style.setProperty('--pointer-width', arrowWidth);
+      featureCard.style.setProperty('--pointer-x-offset', arrowOffset);
 
       featureTag.innerText = tag;
       featureTag.style.backgroundColor = style.tagBg;
@@ -904,7 +1018,6 @@
     function showFeatureCard(show) {
       if (show) {
         featureCard.classList.add('visible');
-        // 修正：九宮格縮小置於左邊，特寫 Pop-up 卡片位於右側稍微遮住九宮格右邊緣
         gridWrapper.style.transform = 'scale(0.85) translateX(-240px)';
       } else {
         featureCard.classList.remove('visible');
@@ -929,29 +1042,69 @@
       progressBar.style.width = `${progress}%`;
 
       if (elapsed >= duration) {
-        currentIndex = (currentIndex + 1) % slideData.length;
+        if (currentIndex === slideData.length - 1) {
+          // 播完最後一頁時暫停並彈出重新播放確認 Modal
+          isPlaying = false;
+          playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+          showReplayModal(true);
+          return;
+        }
+        currentIndex++;
         renderSlide(currentIndex);
       }
 
       requestAnimationFrame(updateProgress);
     }
 
+    function showReplayModal(show) {
+      if (show) {
+        replayModal.classList.add('visible');
+      } else {
+        replayModal.classList.remove('visible');
+      }
+    }
+
+    replayYesBtn.addEventListener('click', () => {
+      showReplayModal(false);
+      currentIndex = 0;
+      progressBar.style.width = '0%';
+      renderSlide(currentIndex);
+      isPlaying = true;
+      playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+      requestAnimationFrame(updateProgress);
+    });
+
+    replayNoBtn.addEventListener('click', () => {
+      showReplayModal(false);
+    });
+
     playBtn.addEventListener('click', () => {
+      if (replayModal.classList.contains('visible')) {
+        showReplayModal(false);
+      }
       isPlaying = !isPlaying;
       playBtn.innerHTML = isPlaying ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>';
       if (isPlaying) {
-        startTime = Date.now() - (parseFloat(progressBar.style.width) / 100 * duration);
+        if (currentIndex === slideData.length - 1 && parseFloat(progressBar.style.width) >= 100) {
+          currentIndex = 0;
+          progressBar.style.width = '0%';
+          renderSlide(currentIndex);
+        } else {
+          startTime = Date.now() - (parseFloat(progressBar.style.width) / 100 * duration);
+        }
         requestAnimationFrame(updateProgress);
       }
     });
 
     prevBtn.addEventListener('click', () => {
+      showReplayModal(false);
       currentIndex = (currentIndex - 1 + slideData.length) % slideData.length;
       progressBar.style.width = '0%';
       renderSlide(currentIndex);
     });
 
     nextBtn.addEventListener('click', () => {
+      showReplayModal(false);
       currentIndex = (currentIndex + 1) % slideData.length;
       progressBar.style.width = '0%';
       renderSlide(currentIndex);
