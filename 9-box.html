@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>音樂九宮格 - 動畫簡報</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-dark: #0a0d14;
+      --card-bg: rgba(255, 255, 255, 0.04);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --text-main: #f1f5f9;
+      --text-sub: #94a3b8;
+      
+      --accent-gold: #d4af37;
+      --accent-yellow: #f59e0b;
+      --accent-green: #10b981;
+      --accent-blue: #3b82f6;
+      --accent-red: #ef4444;
+      
+      --glow-gold: rgba(212, 175, 55, 0.35);
+      --glow-blue: rgba(59, 130, 246, 0.35);
+      --glow-red: rgba(239, 68, 68, 0.35);
+      --glow-green: rgba(16, 185, 129, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: #030508;
+      color: var(--text-main);
+      font-family: 'Montserrat', 'Noto Serif TC', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* 主舞台 */
+    .stage {
+      width: 1280px;
+      height: 640px;
+      background-color: var(--bg-dark);
+      border-radius: 16px;
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(212, 175, 55, 0.1);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px 50px 15px 50px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* 背景流光 */
+    .stage::before {
+      content: '';
+      position: absolute;
+      top: -30%;
+      left: -20%;
+      width: 140%;
+      height: 160%;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.06) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(239, 68, 68, 0.04) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* 頂部標題區 */
+    .header {
+      text-align: center;
+      z-index: 10;
+      transition: all 0.5s ease;
+    }
+
+    .header .slide-num {
+      font-size: 0.8rem;
+      color: var(--accent-gold);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+      font-weight: 600;
+    }
+
+    .header h1 {
+      font-size: 2.2rem;
+      font-family: 'Noto Serif TC', serif;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: 1px;
+      margin-bottom: 2px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .header p {
+      font-size: 0.9rem;
+      color: var(--text-sub);
+      font-weight: 400;
+      margin-bottom: 8px;
+    }
+
+    /* 上方解說字幕區 */
+    .subtitle-box {
+      z-index: 10;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      padding: 8px 24px;
+      border-radius: 30px;
+      text-align: center;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+      transition: all 0.4s ease;
+      margin: 0 auto;
+      max-width: 880px;
+    }
+
+    .subtitle-text {
+      font-size: 1rem;
+      color: #e2e8f0;
+      line-height: 1.35;
+      font-weight: 400;
+      letter-spacing: 0.3px;
+    }
+
+    /* 主視覺區域 */
+    .viewport {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+      margin: 5px 0;
+    }
+
+    .grid-wrapper {
+      position: relative;
+      padding: 35px;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* 軸線標籤 */
+    .axis-tag {
+      position: absolute;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      transition: all 0.5s ease;
+      opacity: 0.85;
+    }
+
+    .tag-top { top: -5px; left: 50%; transform: translateX(-50%); color: var(--accent-yellow); }
+    .tag-bottom { bottom: -5px; left: 50%; transform: translateX(-50%); color: var(--accent-blue); }
+    .tag-left { left: -35px; top: 50%; transform: translateY(-50%) rotate(-90deg); color: var(--accent-green); }
+    .tag-right { right: -35px; top: 50%; transform: translateY(-50%) rotate(90deg); color: var(--accent-red); }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(3, 150px);
+      grid-template-rows: repeat(3, 105px);
+      gap: 14px;
+    }
+
+    /* 宮格卡片 */
+    .cell {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 8px;
+      transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+      opacity: 0.25;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .cell .title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 4px;
+      text-align: center;
+      font-family: 'Noto Serif TC', serif;
+    }
+
+    .cell .coords {
+      font-size: 0.72rem;
+      color: var(--text-sub);
+      font-weight: 400;
+      letter-spacing: 0.5px;
+    }
+
+    /* 狀態 Classes */
+    .cell.active {
+      opacity: 1;
+      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .cell.focus {
+      opacity: 1;
+      transform: scale(1.12);
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 30px var(--glow-gold);
+      background: rgba(212, 175, 55, 0.2);
+      z-index: 20;
+    }
+
+    .cell.highlight-yellow {
+      opacity: 1;
+      border-color: var(--accent-yellow);
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.3);
+      background: rgba(245, 158, 11, 0.15);
+    }
+
+    .cell.highlight-blue {
+      opacity: 1;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 25px var(--glow-blue);
+      background: rgba(59, 130, 246, 0.15);
+    }
+
+    .cell.highlight-green {
+      opacity: 1;
+      border-color: var(--accent-green);
+      box-shadow: 0 0 25px var(--glow-green);
+      background: rgba(16, 185, 129, 0.15);
+    }
+
+    .cell.highlight-red {
+      opacity: 1;
+      border-color: var(--accent-red);
+      box-shadow: 0 0 25px var(--glow-red);
+      background: rgba(239, 68, 68, 0.15);
+    }
+
+    /* 特寫說明卡片面板 */
+    .feature-card {
+      position: absolute;
+      width: 460px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--accent-gold);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 30px var(--glow-gold);
+      backdrop-filter: blur(10px);
+      z-index: 30;
+      opacity: 0;
+      transform: scale(0.9) translateY(20px);
+      pointer-events: none;
+      transition: all 0.5s ease;
+      text-align: center;
+    }
+
+    .feature-card.visible {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+    }
+
+    .feature-card h2 {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.7rem;
+      color: var(--accent-gold);
+      margin-bottom: 6px;
+    }
+
+    .feature-card .tag {
+      display: inline-block;
+      padding: 3px 10px;
+      background: rgba(212, 175, 55, 0.15);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      color: var(--accent-yellow);
+      margin-bottom: 10px;
+    }
+
+    .feature-card p {
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    /* 播放控制列 */
+    .controls {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      z-index: 20;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 4px 16px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .ctrl-btn {
+      background: none;
+      border: none;
+      color: var(--text-sub);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: color 0.2s ease;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ctrl-btn:hover { color: var(--accent-gold); }
+
+    .progress-bar-container {
+      width: 220px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 2px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-gold);
+      transition: width 0.1s linear;
+    }
+
+    /* 右上角低調版本編號 */
+    .version-tag {
+      position: absolute;
+      top: 10px;
+      right: 35px;
+      font-size: 0.75rem;
+      font-family: 'Montserrat', monospace;
+      color: var(--accent-gold);
+      opacity: 0.4;
+      letter-spacing: 1px;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    /* 外部連結按鈕 */
+    .link-badge {
+      position: absolute;
+      top: 30px;
+      right: 35px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      color: var(--text-sub);
+      text-decoration: none;
+      font-size: 0.8rem;
+      transition: all 0.3s ease;
+    }
+
+    .link-badge:hover {
+      background: rgba(212, 175, 55, 0.15);
+      border-color: var(--accent-gold);
+      color: var(--accent-gold);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="stage">
+    
+    <!-- 右上角低調版本編號 -->
+    <div class="version-tag">v1.01</div>
+
+    <!-- 右上網頁連結 -->
+    <a href="https://euhuang2.github.io/Music_9_Grids/" target="_blank" class="link-badge">
+      <i class="fa-solid fa-globe"></i> Music_9_Grids
+    </a>
+
+    <!-- 頁頭資訊 -->
+    <div class="header">
+      <div class="slide-num" id="slideNum">SLIDE 01 / 12</div>
+      <h1 id="title">音樂九宮格：聽覺情緒的立體地圖</h1>
+      <p id="subtitle">極簡三維度座標 ｜ 心情聽覺定位</p>
+      
+      <!-- 解說字幕區 -->
+      <div class="subtitle-box">
+        <div class="subtitle-text" id="captionText">
+          載入中...
+        </div>
+      </div>
+    </div>
+
+    <!-- 主視覺九宮格 -->
+    <div class="viewport">
+      
+      <div class="grid-wrapper" id="gridWrapper">
+        <div class="axis-tag tag-top">▲ 愉悅</div>
+        <div class="axis-tag tag-bottom">▼ 悲沈</div>
+        <div class="axis-tag tag-left">◄ 輕柔</div>
+        <div class="axis-tag tag-right">強烈 ►</div>
+
+        <div class="grid-container">
+          <div class="cell" id="c1">
+            <div class="title">輕鬆愉悅</div>
+            <div class="coords">輕柔 × 愉悅</div>
+          </div>
+          <div class="cell" id="c2">
+            <div class="title">活潑暢意</div>
+            <div class="coords">中庸 × 愉悅</div>
+          </div>
+          <div class="cell" id="c3">
+            <div class="title">振奮激昂</div>
+            <div class="coords">強烈 × 愉悅</div>
+          </div>
+          <div class="cell" id="c4">
+            <div class="title">悠揚舒緩</div>
+            <div class="coords">輕柔 × 中庸</div>
+          </div>
+          <div class="cell" id="c5">
+            <div class="title">中庸從容</div>
+            <div class="coords">中庸 × 中庸</div>
+          </div>
+          <div class="cell" id="c6">
+            <div class="title">雄偉莊嚴</div>
+            <div class="coords">強烈 × 中庸</div>
+          </div>
+          <div class="cell" id="c7">
+            <div class="title">低迴沉吟</div>
+            <div class="coords">輕柔 × 悲沈</div>
+          </div>
+          <div class="cell" id="c8">
+            <div class="title">深沈濃郁</div>
+            <div class="coords">中庸 × 悲沈</div>
+          </div>
+          <div class="cell" id="c9">
+            <div class="title">壯烈凝重</div>
+            <div class="coords">強烈 × 悲沈</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 特寫說明卡片面板 -->
+      <div class="feature-card" id="featureCard">
+        <div class="tag" id="featureTag">宮格深度解析</div>
+        <h2 id="featureTitle">語境名稱</h2>
+        <p style="margin-bottom: 10px; color: var(--accent-yellow);" id="featureCoords">座標：---</p>
+        <p id="featureDesc">說明文字載入中...</p>
+      </div>
+
+    </div>
+
+    <!-- 播放控制選單 -->
+    <div class="controls">
+      <button class="ctrl-btn" id="prevBtn" title="上一頁"><i class="fa-solid fa-backward-step"></i></button>
+      <button class="ctrl-btn" id="playBtn" title="播放/暫停"><i class="fa-solid fa-pause"></i></button>
+      <button class="ctrl-btn" id="nextBtn" title="下一頁"><i class="fa-solid fa-forward-step"></i></button>
+      <div class="progress-bar-container" id="progressContainer">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const slideData = [
+      {
+        num: "01 / 12",
+        title: "音樂九宮格：聽覺情緒的立體地圖",
+        subtitle: "聽覺感受的心情座標軸",
+        caption: "歡迎體驗「音樂九宮格」，透過極簡的雙軸架構，為抽象的聽覺感受找到精確的心情座標。",
+        setup: () => {
+          showFeatureCard(false);
+          resetCells(0.25);
+        }
+      },
+      {
+        num: "02 / 12",
+        title: "音樂九宮格：雙軸交會定位法",
+        subtitle: "縱軸：愉悅至悲沈 ｜ 橫軸：輕柔至強烈",
+        caption: "以「樂曲張力」為橫軸（輕柔➔強烈），以「情感調性」為縱軸（愉悅➔悲沈），交織出九大聽覺語境。",
+        setup: () => {
+          showFeatureCard(false);
+          resetCells(0.25);
+          highlight(['c1', 'c2', 'c3'], 'highlight-yellow');
+          highlight(['c7', 'c8', 'c9'], 'highlight-blue');
+        }
+      },
+      {
+        num: "03 / 12",
+        title: "宮格導覽 1/9：右上角",
+        subtitle: "極致動態 ✕ 明亮希望",
+        caption: "位於右上角的「振奮激昂」，具備強烈的打擊樂與銅管重音，展現出勝利與英雄般的昂揚能量。",
+        setup: () => {
+          resetCells(0.15);
+          highlight(['c3'], 'highlight-yellow');
+          setFeatureCardData("宮格 1/9：右上角", "振奮激昂", "強烈 (Intense) × 愉悅 (Joyful)", "明亮輝煌的管弦樂全奏，具備無與倫比的推進力、勝利感與高亢張力。");
+          showFeatureCard(true);
+        }
+      },
+      {
+        num: "04 / 12",
+        title: "宮格導覽 2/9：右中",
+        subtitle: "強烈張力 ✕ 中庸色彩",
+        caption: "位於右中的「雄偉莊嚴」，帶有浩瀚宏大的管弦架構，展現出崇高、威嚴與歷史厚重感。",
+        setup: () => {
+          resetCells(0.15);
+          highlight(['c6'], 'highlight-yellow');
+          setFeatureCardData("宮格 2/9：右中", "雄偉莊嚴", "強烈 (Intense) × 中庸 (Moderate)", "氣勢磅礴的樂曲結構，展現沉穩而不失權威的宏大氣象。");
+          showFeatureCard(true);
+        }
+      },
+      {
+        num: "05 / 12",
+        title: "宮格導覽 3/9：右下角",
+        subtitle: "極致張力 ✕ 悲劇美學",
+        caption: "位於右下角的「壯烈凝重」，融合了管弦樂重音與命運主題，呈現命運抗爭的撼動力量。",
+        setup: () => {
+          resetCells(0.15);
+          highlight(['c9'], 'highlight-red');
+          setFeatureCardData("宮格 3/9：右下角", "壯烈凝重", "強烈 (Intense) × 悲沈 (Somber)", "九宮格中張力最強烈的極致區塊，結合深沉悲劇色彩與命運交響的震撼感。");
+          showFeatureCard(true);
+        }
+      },
+      {
+        num: "06 / 12",
+        title: "宮格導覽 4/9：中上",
+        subtitle: "中庸動態 ✕ 明亮愉悅",
+        caption: "位於中上的「活潑暢意」，節奏明快跳躍，充滿靈動與歡欣的日常生氣。",
+        setup: () => {
+          resetCells(0.15);
+          highlight(['c2'], 'highlight-yellow');
+          setFeatureCardData("宮格 4/9：中上", "活潑暢意", "中庸 (Moderate) × 愉悅 (Joyful)", "流暢輕快的快板節奏，帶有明亮的嬉戲感與奔放活力。");
+          showFeatureCard(true);
+        }
+      },
+      {
+        num: "07 / 12",
+        title: "宮格導覽 5/9：正中心",
+        subtitle: "完美平衡 ✕ 典雅中庸",
+        caption: "位於正中心的「中庸從容」，是古典美學的平衡典範，不疾不徐，展現優雅沉穩的和諧樂音。",
+        setup: () => {
+          resetCells(0.15);
+          highlight(['c5'], 'focus');
+          setFeatureCardData("宮格 5/9：正中心", "中庸從容", "中庸 (Moderate) × 中庸 (Moderate)", "九宮格的基準核心，結構勻稱、張力適中，展現平靜自信的優雅氣度。");
+          showFeatureCard(true);
+        }
+      },
+      {
+        num: "08 / 12",
+        title: "宮格導覽 6/9：中下",
+        subtitle: "中庸動態 ✕ 深沉情感",
+        caption: "位於中下的「深沈濃郁」，具備極為豐富的情感層次，帶有強烈的渲染力與生命沉澱感。",
+        setup: () => {
+          resetCells(0.15);
+          highlight(['c8'], 'highlight-blue');
+          setFeatureCardData("宮格 6/9：中下", "深沈濃郁", "中庸 (Moderate) × 悲沈 (Somber)", "低音弦樂群與和聲交織出極具厚度的情感，飽含敘事深度的感悟。");
+          showFeatureCard(true);
+        }
+      },
+      {
+        num: "09 / 12",
+        title: "宮格導覽 7/9：左上角",
+        subtitle: "輕柔質地 ✕ 明亮希望",
+        caption: "位於左上角的「輕鬆愉悅」，帶來如微風般輕盈優雅的旋律，能瞬間撫平焦慮、沉澱心靈。",
+        setup: () => {
+          resetCells(0.15);
+          highlight(['c1'], 'highlight-green');
+          setFeatureCardData("宮格 7/9：左上角", "輕鬆愉悅", "輕柔 (Soft) × 愉悅 (Joyful)", "充滿透明感的輕柔線條，配器清亮，帶來毫無壓力的溫暖情緒。");
+          showFeatureCard(true);
+        }
+      },
+      {
+        num: "10 / 12",
+        title: "宮格導覽 8/9：左中",
+        subtitle: "輕柔質地 ✕ 中庸和諧",
+        caption: "位於左中的「悠揚舒緩」，音符如流水般平緩漫延，適合放鬆沉思與陪伴日常。",
+        setup: () => {
+          resetCells(0.15);
+          highlight(['c4'], 'highlight-green');
+          setFeatureCardData("宮格 8/9：左中", "悠揚舒緩", "輕柔 (Soft) × 中庸 (Moderate)", "長線條的慢板旋律，氣氛安詳寧靜，提供極具療癒感的心靈包覆。");
+          showFeatureCard(true);
+        }
+      },
+      {
+        num: "11 / 12",
+        title: "宮格導覽 9/9：左下角",
+        subtitle: "輕柔質地 ✕ 深情孤寂",
+        caption: "位於左下角的「低迴沉吟」，表現微弱而深情的低語，蘊含內斂的傷感，適合深夜獨處品味。",
+        setup: () => {
+          resetCells(0.15);
+          highlight(['c7'], 'highlight-blue');
+          setFeatureCardData("宮格 9/9：左下角", "低迴沉吟", "輕柔 (Soft) × 悲沈 (Somber)", "極度細膩的單獨樂器表情，微弱卻深刻，觸動心靈最深處的私密共鳴。");
+          showFeatureCard(true);
+        }
+      },
+      {
+        num: "12 / 12",
+        title: "音樂九宮格：探索屬於你的情緒旋律",
+        subtitle: "https://euhuang2.github.io/Music_9_Grids/",
+        caption: "完整九宮格地圖呈現！點擊任一宮格即可連動 Spotify 隨機播放對應曲風，歡迎線上體驗！",
+        setup: () => {
+          showFeatureCard(false);
+          resetCells(1);
+          highlight(['c1','c2','c3','c4','c5','c6','c7','c8','c9'], 'focus');
+        }
+      }
+    ];
+
+    let currentIndex = 0;
+    let isPlaying = true;
+    let duration = 6000;
+    let startTime = Date.now();
+
+    const slideNumEl = document.getElementById('slideNum');
+    const titleEl = document.getElementById('title');
+    const subtitleEl = document.getElementById('subtitle');
+    const captionTextEl = document.getElementById('captionText');
+    const progressBar = document.getElementById('progressBar');
+    const playBtn = document.getElementById('playBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const featureCard = document.getElementById('featureCard');
+    const featureTag = document.getElementById('featureTag');
+    const featureTitle = document.getElementById('featureTitle');
+    const featureCoords = document.getElementById('featureCoords');
+    const featureDesc = document.getElementById('featureDesc');
+    const gridWrapper = document.getElementById('gridWrapper');
+
+    function resetCells(opacity = 0.25) {
+      document.querySelectorAll('.cell').forEach(cell => {
+        cell.className = 'cell';
+        cell.style.opacity = opacity;
+      });
+      gridWrapper.style.transform = 'scale(1)';
+    }
+
+    function highlight(ids, className) {
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add(className);
+      });
+    }
+
+    function setFeatureCardData(tag, title, coords, desc) {
+      featureTag.innerText = tag;
+      featureTitle.innerText = title;
+      featureCoords.innerText = `座標：${coords}`;
+      featureDesc.innerText = desc;
+    }
+
+    function showFeatureCard(show) {
+      if (show) {
+        featureCard.classList.add('visible');
+        gridWrapper.style.transform = 'scale(0.85) translateX(-180px)';
+      } else {
+        featureCard.classList.remove('visible');
+        gridWrapper.style.transform = 'scale(1)';
+      }
+    }
+
+    function renderSlide(index) {
+      const data = slideData[index];
+      slideNumEl.innerText = `SLIDE ${data.num}`;
+      titleEl.innerText = data.title;
+      subtitleEl.innerText = data.subtitle;
+      captionTextEl.innerText = data.caption;
+
+      data.setup();
+      startTime = Date.now();
+    }
+
+    function updateProgress() {
+      if (!isPlaying) return;
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min((elapsed / duration) * 100, 100);
+      progressBar.style.width = `${progress}%`;
+
+      if (elapsed >= duration) {
+        currentIndex = (currentIndex + 1) % slideData.length;
+        renderSlide(currentIndex);
+      }
+
+      requestAnimationFrame(updateProgress);
+    }
+
+    playBtn.addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      playBtn.innerHTML = isPlaying ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>';
+      if (isPlaying) {
+        startTime = Date.now() - (parseFloat(progressBar.style.width) / 100 * duration);
+        requestAnimationFrame(updateProgress);
+      }
+    });
+
+    prevBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + slideData.length) % slideData.length;
+      progressBar.style.width = '0%';
+      renderSlide(currentIndex);
+    });
+
+    nextBtn.addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % slideData.length;
+      progressBar.style.width = '0%';
+      renderSlide(currentIndex);
+    });
+
+    renderSlide(0);
+    requestAnimationFrame(updateProgress);
+  </script>
+</body>
+</html>

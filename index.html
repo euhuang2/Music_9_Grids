@@ -89,7 +89,7 @@
         .header-title p { color: var(--text-secondary); font-size: 1rem; letter-spacing: 1px; }
 
         /* 動畫說明按鈕 */
-        .presentation-btn {
+        .btn {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
@@ -106,7 +106,7 @@
             white-space: nowrap;
         }
 
-        .presentation-btn:hover {
+        .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5);
             background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
@@ -184,6 +184,32 @@
             display: flex;
             align-items: center;
             gap: 0.6rem;
+        }
+
+        .nav-track-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-track-btn:hover:not(:disabled) {
+            background: var(--accent-gold);
+            color: #000000;
+            border-color: var(--accent-gold);
+        }
+
+        .nav-track-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
         }
 
         .now-playing-info {
@@ -386,7 +412,7 @@
     </style>
 </head>
 <body>
-    <div class="version-tag">v1.19</div>
+    <div class="version-tag">v1.21</div>
 
     <section class="view-section">
         <header>
@@ -395,7 +421,7 @@
                     <h1>于峻的音樂九宮格</h1>
                     <p>九種情緒語境與音樂氛圍的對應</p>
                 </div>
-                <a href="9-box-presentation.html" class="presentation-btn">
+                <a href="9-box.html" class="btn">
                     🎬 觀看九宮格動畫說明
                 </a>
             </div>
@@ -414,10 +440,12 @@
 
             <div class="now-playing-banner" id="now-playing-banner">
                 <div class="player-controls">
+                    <button class="nav-track-btn" id="prev-track-btn" onclick="playPrevShuffleTrack()" title="上一首" disabled>⏮</button>
                     <div class="now-playing-info">
                         <span>♫ 正在播放：</span>
                         <span id="now-playing-target" style="color: #ffffff;">-</span>
                     </div>
+                    <button class="nav-track-btn" id="next-track-btn" onclick="playNextShuffleTrack()" title="下一首">⏭</button>
                 </div>
                 <button class="close-shuffle-btn" onclick="toggleShuffleMode(false)" title="關閉隨機播放">✕ 關閉</button>
             </div>
@@ -461,7 +489,10 @@
 
         const controllers = new Map();
         let isShuffleActive = false;
-        let currentShuffleGridId = null;
+        
+        // 隨機歷史隊列與索引
+        let shuffleHistory = [];
+        let historyIndex = -1;
 
         function stopAllOthers(activeId) {
             controllers.forEach((ctrl, id) => {
@@ -469,6 +500,20 @@
                     try { ctrl.pause(); } catch (err) {}
                 }
             });
+        }
+
+        function playGridTarget(grid) {
+            const targetText = document.getElementById('now-playing-target');
+            const prevBtn = document.getElementById('prev-track-btn');
+
+            targetText.innerText = grid.titleZh;
+            prevBtn.disabled = (historyIndex <= 0);
+
+            stopAllOthers(grid.id);
+            const targetCtrl = controllers.get(grid.id);
+            if (targetCtrl) {
+                targetCtrl.play();
+            }
         }
 
         // 開關隨機播放模式
@@ -486,42 +531,56 @@
                 btnText.innerText = '隨機播放中';
                 banner.classList.add('is-visible');
 
-                playRandomGrid();
+                shuffleHistory = [];
+                historyIndex = -1;
+                playNextShuffleTrack();
             } else {
                 btn.classList.remove('is-active');
                 btnIcon.innerText = '🔀';
                 btnText.innerText = '跨宮格隨機播放';
                 banner.classList.remove('is-visible');
 
-                if (currentShuffleGridId) {
-                    const activeCtrl = controllers.get(currentShuffleGridId);
+                if (historyIndex >= 0 && shuffleHistory[historyIndex]) {
+                    const currentId = shuffleHistory[historyIndex].id;
+                    const activeCtrl = controllers.get(currentId);
                     if (activeCtrl) {
                         try { activeCtrl.pause(); } catch(e){}
                     }
                 }
-                currentShuffleGridId = null;
+                shuffleHistory = [];
+                historyIndex = -1;
             }
         }
 
-        // 隨機選擇一個宮格並播放
-        function playRandomGrid() {
+        // 點擊「下一首 ⏭」
+        function playNextShuffleTrack() {
             if (!isShuffleActive) return;
 
-            // 避開當前宮格
-            let availableGrids = musicGrids.filter(g => g.id !== currentShuffleGridId);
+            // 如果是在歷史紀錄中且後面還有，則前進下一首
+            if (historyIndex < shuffleHistory.length - 1) {
+                historyIndex++;
+                playGridTarget(shuffleHistory[historyIndex]);
+                return;
+            }
+
+            // 否則隨機抽選（避開當前播放的宮格）
+            let currentId = historyIndex >= 0 ? shuffleHistory[historyIndex].id : null;
+            let availableGrids = musicGrids.filter(g => g.id !== currentId);
             if (availableGrids.length === 0) availableGrids = musicGrids;
 
             const randomGrid = availableGrids[Math.floor(Math.random() * availableGrids.length)];
-            currentShuffleGridId = randomGrid.id;
+            shuffleHistory.push(randomGrid);
+            historyIndex = shuffleHistory.length - 1;
 
-            const targetText = document.getElementById('now-playing-target');
-            targetText.innerText = randomGrid.titleZh;
+            playGridTarget(randomGrid);
+        }
 
-            stopAllOthers(randomGrid.id);
-            const targetCtrl = controllers.get(randomGrid.id);
-            if (targetCtrl) {
-                targetCtrl.play();
-            }
+        // 點擊「上一首 ⏮」
+        function playPrevShuffleTrack() {
+            if (!isShuffleActive || historyIndex <= 0) return;
+
+            historyIndex--;
+            playGridTarget(shuffleHistory[historyIndex]);
         }
 
         function updateSpotifyLoginUI(isLoggedIn) {
