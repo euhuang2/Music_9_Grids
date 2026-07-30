@@ -399,7 +399,7 @@
     </style>
 </head>
 <body>
-    <div class="version-tag">v1.27</div>
+    <div class="version-tag">v1.28</div>
 
     <section class="view-section">
         <header>
@@ -470,7 +470,7 @@
             { id: 6, titleZh: "6 - 深沈濃郁", playlistId: "1t9JYd54G0ujqBugxXSd9N", colors: ['#4c1d95', '#8b5cf6'] },
             { id: 7, titleZh: "7 - 輕鬆愉悅", playlistId: "1oc9yD41QwnNEgy4czd6TD", colors: ['#0284c7', '#38bdf8'] },
             { id: 8, titleZh: "8 - 悠揚舒緩", playlistId: "12f2AeitLAxtpDosZJvILN", colors: ['#134e4a', '#0d9488'] },
-            { id: 9, titleZh: "9 - 靜謐沉吟", playlistId: "1q12bVnZ2KLXXCGaCmqooW", colors: ['#0f172a', '#1e1b4b'] } // 已更新名稱
+            { id: 9, titleZh: "9 - 靜謐沉吟", playlistId: "1q12bVnZ2KLXXCGaCmqooW", colors: ['#0f172a', '#1e1b4b'] }
         ];
 
         const controllers = new Map();
@@ -498,10 +498,22 @@
 
             if (targetCtrl) {
                 try {
+                    // 載入 URI
                     targetCtrl.loadUri(`spotify:playlist:${grid.playlistId}`);
-                    setTimeout(() => {
+                    
+                    // 解決載入後停止問題：設定多階段觸發，確保 API 載入後必定播放
+                    const readyHandler = () => {
                         try { targetCtrl.play(); } catch(e){}
-                    }, 300);
+                        targetCtrl.removeListener('ready', readyHandler);
+                    };
+                    targetCtrl.addListener('ready', readyHandler);
+
+                    // 多重保險：依序在 300ms, 600ms, 1000ms 嘗試觸發播放
+                    [300, 600, 1000].forEach(delay => {
+                        setTimeout(() => {
+                            try { targetCtrl.play(); } catch(e){}
+                        }, delay);
+                    });
                 } catch (e) {
                     try { targetCtrl.play(); } catch(err){}
                 }
