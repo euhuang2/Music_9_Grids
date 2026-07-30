@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>音樂九宮格 - 動畫簡報</title>
+  <title>音樂九宮格 - v1.09 動畫簡報</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
@@ -43,7 +43,6 @@
       user-select: none;
     }
 
-    /* 主舞台 */
     .stage {
       width: 1280px;
       height: 640px;
@@ -57,7 +56,20 @@
       padding: 20px 50px 15px 50px;
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.12);
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
+    /* 開場模式 - 第一頁置中放大 */
+    .stage.intro-mode .header {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      padding: 0 100px;
+    }
+    .stage.intro-mode .header h1 { font-size: 3.2rem; margin-bottom: 25px; }
+    .stage.intro-mode .subtitle-box { padding: 20px 40px; font-size: 1.4rem; border-radius: 40px; }
 
     /* 背景流光 */
     .stage::before {
@@ -75,7 +87,6 @@
       z-index: 0;
     }
 
-    /* 頂部標題區 */
     .header {
       text-align: center;
       z-index: 10;
@@ -93,7 +104,6 @@
       text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     }
 
-    /* 上方解說字幕區 */
     .subtitle-box {
       z-index: 10;
       background: rgba(15, 23, 42, 0.85);
@@ -120,7 +130,6 @@
       letter-spacing: 0.3px;
     }
 
-    /* 主視覺區域 */
     .viewport {
       flex-grow: 1;
       display: flex;
@@ -134,10 +143,9 @@
     .grid-wrapper {
       position: relative;
       padding: 35px;
-      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
     }
 
-    /* 軸線標籤 */
     .axis-tag {
       position: absolute;
       font-size: 1.5rem;
@@ -152,7 +160,6 @@
     .tag-left { left: -35px; top: 50%; transform: translateY(-50%) rotate(-90deg); color: var(--accent-green); }
     .tag-right { right: -35px; top: 50%; transform: translateY(-50%) rotate(90deg); color: var(--accent-red); }
 
-    /* 雙軸展開展示向量圖 (Slide 2 & 3) */
     .axis-diagram-container {
       position: absolute;
       width: 500px;
@@ -165,10 +172,7 @@
       transition: opacity 0.5s ease;
     }
 
-    .axis-diagram-container.visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
+    .axis-diagram-container.visible { opacity: 1; pointer-events: auto; }
 
     .axis-line-h, .axis-line-v {
       position: absolute;
@@ -178,38 +182,16 @@
       transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .axis-line-h {
-      height: 16px;
-      width: 0px;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-
-    .axis-line-v {
-      width: 16px;
-      height: 0px;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-
+    .axis-line-h { height: 16px; width: 0px; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+    .axis-line-v { width: 16px; height: 0px; top: 50%; left: 50%; transform: translate(-50%, -50%); }
     .axis-line-h.expanded { width: 280px; }
     .axis-line-v.expanded { height: 200px; }
 
-    .arrow-head {
-      position: absolute;
-      width: 0;
-      height: 0;
-      opacity: 0;
-      transition: opacity 0.4s ease 0.4s;
-    }
-
+    .arrow-head { position: absolute; width: 0; height: 0; opacity: 0; transition: opacity 0.4s ease 0.4s; }
     .arrow-left { border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-right: 18px solid #cbd5e1; left: -16px; top: -4px; }
     .arrow-right { border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 18px solid #cbd5e1; right: -16px; top: -4px; }
     .arrow-top { border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 18px solid #cbd5e1; top: -16px; left: -4px; }
     .arrow-bottom { border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 18px solid #cbd5e1; bottom: -16px; left: -4px; }
-
     .expanded .arrow-head { opacity: 1; }
 
     .diagram-label {
@@ -226,13 +208,8 @@
     .label-top { color: #f59e0b; top: 15px; left: 50%; transform: translateX(-50%) translateY(-20px); }
     .label-bottom { color: #3b82f6; bottom: 15px; left: 50%; transform: translateX(-50%) translateY(20px); }
 
-    .diagram-label.visible {
-      opacity: 1;
-      transform: translate(0, -50%);
-    }
-    .label-top.visible, .label-bottom.visible {
-      transform: translate(-50%, 0);
-    }
+    .diagram-label.visible { opacity: 1; transform: translate(0, -50%); }
+    .label-top.visible, .label-bottom.visible { transform: translate(-50%, 0); }
 
     .grid-container {
       display: grid;
@@ -242,7 +219,6 @@
       transition: opacity 0.5s ease;
     }
 
-    /* 宮格卡片 - 高對比清晰邊框 */
     .cell {
       background: var(--card-bg);
       border: 2px solid var(--card-border);
@@ -259,68 +235,15 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 0 12px rgba(255, 255, 255, 0.05);
     }
 
-    .cell .title {
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 4px;
-      text-align: center;
-      font-family: 'Noto Serif TC', serif;
-    }
+    .cell .title { font-size: 1.35rem; font-weight: 700; color: #ffffff; margin-bottom: 4px; text-align: center; font-family: 'Noto Serif TC', serif; }
+    .cell .coords { font-size: 0.72rem; color: #cbd5e1; font-weight: 500; letter-spacing: 0.5px; }
+    .cell.active { opacity: 0.85; border-color: rgba(255, 255, 255, 0.7); background: rgba(255, 255, 255, 0.12); box-shadow: 0 0 15px rgba(255, 255, 255, 0.15); }
+    .cell.focus { opacity: 1; transform: scale(1.12); border-color: #f59e0b; box-shadow: 0 0 30px var(--glow-gold), inset 0 0 15px rgba(212, 175, 55, 0.3); background: rgba(212, 175, 55, 0.25); z-index: 20; }
+    .cell.highlight-yellow { opacity: 1; border-color: #f59e0b; box-shadow: 0 0 25px rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.22); }
+    .cell.highlight-blue { opacity: 1; border-color: #3b82f6; box-shadow: 0 0 25px var(--glow-blue); background: rgba(59, 130, 246, 0.22); }
+    .cell.highlight-green { opacity: 1; border-color: #10b981; box-shadow: 0 0 25px var(--glow-green); background: rgba(16, 185, 129, 0.22); }
+    .cell.highlight-red { opacity: 1; border-color: #ef4444; box-shadow: 0 0 25px var(--glow-red); background: rgba(239, 68, 68, 0.22); }
 
-    .cell .coords {
-      font-size: 0.72rem;
-      color: #cbd5e1;
-      font-weight: 500;
-      letter-spacing: 0.5px;
-    }
-
-    /* 狀態 Classes */
-    .cell.active {
-      opacity: 0.85;
-      border-color: rgba(255, 255, 255, 0.7);
-      background: rgba(255, 255, 255, 0.12);
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
-    }
-
-    .cell.focus {
-      opacity: 1;
-      transform: scale(1.12);
-      border-color: #f59e0b;
-      box-shadow: 0 0 30px var(--glow-gold), inset 0 0 15px rgba(212, 175, 55, 0.3);
-      background: rgba(212, 175, 55, 0.25);
-      z-index: 20;
-    }
-
-    .cell.highlight-yellow {
-      opacity: 1;
-      border-color: #f59e0b;
-      box-shadow: 0 0 25px rgba(245, 158, 11, 0.4);
-      background: rgba(245, 158, 11, 0.22);
-    }
-
-    .cell.highlight-blue {
-      opacity: 1;
-      border-color: #3b82f6;
-      box-shadow: 0 0 25px var(--glow-blue);
-      background: rgba(59, 130, 246, 0.22);
-    }
-
-    .cell.highlight-green {
-      opacity: 1;
-      border-color: #10b981;
-      box-shadow: 0 0 25px var(--glow-green);
-      background: rgba(16, 185, 129, 0.22);
-    }
-
-    .cell.highlight-red {
-      opacity: 1;
-      border-color: #ef4444;
-      box-shadow: 0 0 25px var(--glow-red);
-      background: rgba(239, 68, 68, 0.22);
-    }
-
-    /* 特寫說明 Pop-up 卡片 - 放緩優雅動效 (0.8s) */
     .feature-card {
       position: absolute;
       right: 110px;
@@ -337,7 +260,6 @@
       border: 1px solid rgba(255, 255, 255, 0.25);
     }
 
-    /* 特寫面板左側伸展指示箭頭 */
     .feature-card::before {
       content: '';
       position: absolute;
@@ -352,319 +274,82 @@
       transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .feature-card.visible {
-      opacity: 1;
-      transform: scale(1) translateX(0);
-      pointer-events: auto;
-    }
+    .feature-card.visible { opacity: 1; transform: scale(1) translateX(0); pointer-events: auto; }
+    .feature-card h2 { font-family: 'Noto Serif TC', serif; font-size: 1.8rem; font-weight: 700; color: #18181b; margin-bottom: 6px; }
+    .feature-card .tag { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; margin-bottom: 10px; background: rgba(255, 255, 255, 0.6); color: #27272a; }
+    .feature-card p { font-size: 0.98rem; color: #27272a; line-height: 1.6; font-weight: 500; }
+    .feature-card .coords-line { margin-bottom: 10px; font-weight: 700; font-size: 0.92rem; }
 
-    .feature-card h2 {
-      font-family: 'Noto Serif TC', serif;
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: #18181b;
-      margin-bottom: 6px;
-    }
-
-    .feature-card .tag {
-      display: inline-block;
-      padding: 4px 14px;
-      border-radius: 20px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-      background: rgba(255, 255, 255, 0.6);
-      color: #27272a;
-    }
-
-    .feature-card p {
-      font-size: 0.98rem;
-      color: #27272a;
-      line-height: 1.6;
-      font-weight: 500;
-    }
-
-    .feature-card .coords-line {
-      margin-bottom: 10px;
-      font-weight: 700;
-      font-size: 0.92rem;
-    }
-
-    /* 播放控制列 */
-    .controls {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      z-index: 20;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 4px 16px;
-      border-radius: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-    }
-
-    .ctrl-btn {
-      background: none;
-      border: none;
-      color: var(--text-sub);
-      font-size: 1rem;
-      cursor: pointer;
-      transition: color 0.2s ease;
-      width: 28px;
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
+    .controls { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 15px; z-index: 20; background: rgba(0, 0, 0, 0.6); padding: 4px 16px; border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.12); }
+    .ctrl-btn { background: none; border: none; color: var(--text-sub); font-size: 1rem; cursor: pointer; transition: color 0.2s ease; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
     .ctrl-btn:hover { color: var(--accent-gold); }
-
-    .progress-bar-container {
-      width: 220px;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 2px;
-      overflow: hidden;
-      cursor: pointer;
-    }
-
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: var(--accent-gold);
-      transition: width 0.1s linear;
-    }
-
-    /* 右上角低調版本編號 */
-    .version-tag {
-      position: absolute;
-      top: 10px;
-      right: 35px;
-      font-size: 0.75rem;
-      font-family: 'Montserrat', monospace;
-      color: var(--accent-gold);
-      opacity: 0.4;
-      letter-spacing: 1px;
-      z-index: 20;
-      pointer-events: none;
-    }
-
-    /* 外部連結按鈕 */
-    .link-badge {
-      position: absolute;
-      top: 30px;
-      right: 35px;
-      z-index: 20;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 14px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      border-radius: 20px;
-      color: var(--text-sub);
-      text-decoration: none;
-      font-size: 0.8rem;
-      transition: all 0.3s ease;
-    }
-
-    .link-badge:hover {
-      background: rgba(212, 175, 55, 0.15);
-      border-color: var(--accent-gold);
-      color: var(--accent-gold);
-    }
-
-    /* 重新播放詢問彈窗 (Modal) */
-    .replay-modal {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(8px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 100;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .replay-modal.visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .replay-box {
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid var(--accent-gold);
-      box-shadow: 0 0 30px var(--glow-gold);
-      border-radius: 16px;
-      padding: 30px 45px;
-      text-align: center;
-      transform: scale(0.9);
-      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .replay-modal.visible .replay-box {
-      transform: scale(1);
-    }
-
-    .replay-box h3 {
-      font-family: 'Noto Serif TC', serif;
-      font-size: 1.5rem;
-      color: var(--text-main);
-      margin-bottom: 25px;
-      letter-spacing: 1px;
-    }
-
-    .replay-btn-group {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-    }
-
-    .modal-btn {
-      padding: 8px 28px;
-      border-radius: 20px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      border: 1px solid transparent;
-    }
-
-    .btn-yes {
-      background: var(--accent-gold);
-      color: #0f172a;
-      box-shadow: 0 4px 12px var(--glow-gold);
-    }
-
-    .btn-yes:hover {
-      background: #f59e0b;
-      transform: translateY(-2px);
-    }
-
-    .btn-no {
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--text-sub);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .btn-no:hover {
-      background: rgba(255, 255, 255, 0.2);
-      color: var(--text-main);
-      transform: translateY(-2px);
-    }
+    .progress-bar-container { width: 220px; height: 4px; background: rgba(255, 255, 255, 0.15); border-radius: 2px; overflow: hidden; cursor: pointer; }
+    .progress-bar { height: 100%; width: 0%; background: var(--accent-gold); transition: width 0.1s linear; }
+    .version-tag { position: absolute; top: 10px; right: 35px; font-size: 0.75rem; font-family: 'Montserrat', monospace; color: var(--accent-gold); opacity: 0.4; letter-spacing: 1px; z-index: 20; pointer-events: none; }
+    .link-badge { position: absolute; top: 30px; right: 35px; z-index: 20; display: flex; align-items: center; gap: 8px; padding: 6px 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 20px; color: var(--text-sub); text-decoration: none; font-size: 0.8rem; transition: all 0.3s ease; }
+    .link-badge:hover { background: rgba(212, 175, 55, 0.15); border-color: var(--accent-gold); color: var(--accent-gold); }
+    .replay-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+    .replay-modal.visible { opacity: 1; pointer-events: auto; }
+    .replay-box { background: rgba(15, 23, 42, 0.95); border: 1px solid var(--accent-gold); box-shadow: 0 0 30px var(--glow-gold); border-radius: 16px; padding: 30px 45px; text-align: center; transform: scale(0.9); transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+    .replay-modal.visible .replay-box { transform: scale(1); }
+    .replay-box h3 { font-family: 'Noto Serif TC', serif; font-size: 1.5rem; color: var(--text-main); margin-bottom: 25px; letter-spacing: 1px; }
+    .replay-btn-group { display: flex; gap: 20px; justify-content: center; }
+    .modal-btn { padding: 8px 28px; border-radius: 20px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.25s ease; border: 1px solid transparent; }
+    .btn-yes { background: var(--accent-gold); color: #0f172a; box-shadow: 0 4px 12px var(--glow-gold); }
+    .btn-yes:hover { background: #f59e0b; transform: translateY(-2px); }
+    .btn-no { background: rgba(255, 255, 255, 0.1); color: var(--text-sub); border-color: rgba(255, 255, 255, 0.2); }
+    .btn-no:hover { background: rgba(255, 255, 255, 0.2); color: var(--text-main); transform: translateY(-2px); }
   </style>
 </head>
 <body>
 
-  <div class="stage">
-    
-    <!-- 右上角低調版本編號 -->
-    <div class="version-tag">v1.08</div>
+  <div class="stage" id="mainStage">
+    <div class="version-tag">v1.09</div>
+    <a href="https://euhuang2.github.io/Music_9_Grids/" target="_blank" class="link-badge"><i class="fa-solid fa-globe"></i> 回到九宮格播放器</a>
 
-    <!-- 右上網頁連結按鈕 -->
-    <a href="https://euhuang2.github.io/Music_9_Grids/" target="_blank" class="link-badge">
-      <i class="fa-solid fa-globe"></i> 回到九宮格播放器
-    </a>
-
-    <!-- 頁頭資訊 -->
     <div class="header">
       <h1 id="title">音樂九宮格：聽覺情緒的立體地圖</h1>
-      
-      <!-- 解說字幕區 -->
       <div class="subtitle-box">
-        <div class="subtitle-text" id="captionText">
-          載入中...
-        </div>
+        <div class="subtitle-text" id="captionText">載入中...</div>
       </div>
     </div>
 
-    <!-- 主視覺區域 -->
     <div class="viewport">
-      
-      <!-- 雙軸展開展示動畫元件 -->
       <div class="axis-diagram-container" id="axisDiagram">
-        <div class="axis-line-h" id="lineH">
-          <div class="arrow-head arrow-left"></div>
-          <div class="arrow-head arrow-right"></div>
-        </div>
-        <div class="axis-line-v" id="lineV">
-          <div class="arrow-head arrow-top"></div>
-          <div class="arrow-head arrow-bottom"></div>
-        </div>
-
+        <div class="axis-line-h" id="lineH"><div class="arrow-head arrow-left"></div><div class="arrow-head arrow-right"></div></div>
+        <div class="axis-line-v" id="lineV"><div class="arrow-head arrow-top"></div><div class="arrow-head arrow-bottom"></div></div>
         <div class="diagram-label label-left" id="lblLeft">輕柔</div>
         <div class="diagram-label label-right" id="lblRight">強烈</div>
         <div class="diagram-label label-top" id="lblTop">愉悅</div>
         <div class="diagram-label label-bottom" id="lblBottom">悲沈</div>
       </div>
 
-      <!-- 九宮格元件 -->
       <div class="grid-wrapper" id="gridWrapper">
         <div class="axis-tag tag-top">▲ 愉悅</div>
         <div class="axis-tag tag-bottom">▼ 悲沈</div>
         <div class="axis-tag tag-left">◄ 輕柔</div>
         <div class="axis-tag tag-right">強烈 ►</div>
-
         <div class="grid-container" id="gridContainer">
-          <div class="cell" id="c1">
-            <div class="title">輕鬆愉悅</div>
-            <div class="coords">輕柔 × 愉悅</div>
-          </div>
-          <div class="cell" id="c2">
-            <div class="title">活潑暢意</div>
-            <div class="coords">中庸 × 愉悅</div>
-          </div>
-          <div class="cell" id="c3">
-            <div class="title">振奮激昂</div>
-            <div class="coords">強烈 × 愉悅</div>
-          </div>
-          <div class="cell" id="c4">
-            <div class="title">悠揚舒緩</div>
-            <div class="coords">輕柔 × 中庸</div>
-          </div>
-          <div class="cell" id="c5">
-            <div class="title">優雅從容</div>
-            <div class="coords">中庸 × 中庸</div>
-          </div>
-          <div class="cell" id="c6">
-            <div class="title">雄偉莊嚴</div>
-            <div class="coords">強烈 × 中庸</div>
-          </div>
-          <div class="cell" id="c7">
-            <div class="title">靜謐沉吟</div>
-            <div class="coords">輕柔 × 悲沈</div>
-          </div>
-          <div class="cell" id="c8">
-            <div class="title">深沈濃郁</div>
-            <div class="coords">中庸 × 悲沈</div>
-          </div>
-          <div class="cell" id="c9">
-            <div class="title">壯烈凝重</div>
-            <div class="coords">強烈 × 悲沈</div>
-          </div>
+          <div class="cell" id="c1"><div class="title">輕鬆愉悅</div><div class="coords">輕柔 × 愉悅</div></div>
+          <div class="cell" id="c2"><div class="title">活潑暢意</div><div class="coords">中庸 × 愉悅</div></div>
+          <div class="cell" id="c3"><div class="title">振奮激昂</div><div class="coords">強烈 × 愉悅</div></div>
+          <div class="cell" id="c4"><div class="title">悠揚舒緩</div><div class="coords">輕柔 × 中庸</div></div>
+          <div class="cell" id="c5"><div class="title">優雅從容</div><div class="coords">中庸 × 中庸</div></div>
+          <div class="cell" id="c6"><div class="title">雄偉莊嚴</div><div class="coords">強烈 × 中庸</div></div>
+          <div class="cell" id="c7"><div class="title">靜謐沉吟</div><div class="coords">輕柔 × 悲沈</div></div>
+          <div class="cell" id="c8"><div class="title">深沈濃郁</div><div class="coords">中庸 × 悲沈</div></div>
+          <div class="cell" id="c9"><div class="title">壯烈凝重</div><div class="coords">強烈 × 悲沈</div></div>
         </div>
       </div>
 
-      <!-- 特寫說明 Pop-up 卡片 - 莫蘭迪風格 -->
       <div class="feature-card" id="featureCard">
         <div class="tag" id="featureTag">宮格深度解析</div>
         <h2 id="featureTitle">語境名稱</h2>
         <div class="coords-line" id="featureCoords">座標：---</div>
         <p id="featureDesc">說明文字載入中...</p>
       </div>
-
     </div>
 
-    <!-- 播放控制選單 -->
     <div class="controls">
       <button class="ctrl-btn" id="prevBtn" title="上一頁"><i class="fa-solid fa-backward-step"></i></button>
       <button class="ctrl-btn" id="playBtn" title="播放/暫停"><i class="fa-solid fa-pause"></i></button>
@@ -674,7 +359,6 @@
       </div>
     </div>
 
-    <!-- 重新播放彈窗 -->
     <div class="replay-modal" id="replayModal">
       <div class="replay-box">
         <h3>是否重新播放？</h3>
@@ -684,11 +368,9 @@
         </div>
       </div>
     </div>
-
   </div>
 
   <script>
-    // 各宮格配置（col 欄位：1=左欄, 2=中欄, 3=右欄；row 欄位：1=上, 2=中, 3=下）
     const morandiStyles = {
       c1: { bg: '#dbece5', highlight: '#0f766e', tagBg: '#c3e2d4', row: 1, col: 1 },
       c2: { bg: '#fef3c7', highlight: '#d97706', tagBg: '#fde68a', row: 1, col: 2 },
@@ -710,9 +392,10 @@
         caption: "歡迎體驗「音樂九宮格」，透過極簡的雙軸架構，為抽象的聽覺感受找到精確的心情座標。",
         duration: 8000,
         setup: () => {
+          document.getElementById('mainStage').classList.add('intro-mode');
           showAxisDiagram(false);
           showFeatureCard(false);
-          setGridVisible(true);
+          setGridVisible(false);
           resetCells(0.35);
         }
       },
@@ -906,6 +589,7 @@
     let duration = 8000;
     let startTime = Date.now();
 
+    // DOM Elements
     const titleEl = document.getElementById('title');
     const captionTextEl = document.getElementById('captionText');
     const progressBar = document.getElementById('progressBar');
@@ -925,7 +609,7 @@
     const lblRight = document.getElementById('lblRight');
     const lblTop = document.getElementById('lblTop');
     const lblBottom = document.getElementById('lblBottom');
-    
+    const mainStage = document.getElementById('mainStage');
     const replayModal = document.getElementById('replayModal');
     const replayYesBtn = document.getElementById('replayYesBtn');
     const replayNoBtn = document.getElementById('replayNoBtn');
@@ -986,23 +670,15 @@
       featureCard.style.backgroundColor = style.bg;
       featureCard.style.setProperty('--pointer-color', style.bg);
       
-      // 動態計算指示箭頭高度 (Y軸)
       let pointerYPercent = '50%';
       if (style.row === 1) pointerYPercent = '25%';
       else if (style.row === 3) pointerYPercent = '75%';
       featureCard.style.setProperty('--pointer-y', pointerYPercent);
 
-      // 動態伸長指示箭頭長度 (X軸)：右欄（標準長）、中欄（加長）、左欄（極長）
       let arrowWidth = '14px';
       let arrowOffset = '-14px';
-
-      if (style.col === 2) { // 中欄 (c2, c5, c8)
-        arrowWidth = '145px';
-        arrowOffset = '-145px';
-      } else if (style.col === 1) { // 左欄 (c1, c4, c7)
-        arrowWidth = '280px';
-        arrowOffset = '-280px';
-      }
+      if (style.col === 2) { arrowWidth = '145px'; arrowOffset = '-145px'; } 
+      else if (style.col === 1) { arrowWidth = '280px'; arrowOffset = '-280px'; }
 
       featureCard.style.setProperty('--pointer-width', arrowWidth);
       featureCard.style.setProperty('--pointer-x-offset', arrowOffset);
@@ -1027,6 +703,11 @@
     }
 
     function renderSlide(index) {
+      // 移除 intro-mode (只在第一頁生效)
+      if (index !== 0) {
+        mainStage.classList.remove('intro-mode');
+      }
+      
       const data = slideData[index];
       titleEl.innerText = data.title;
       captionTextEl.innerText = data.caption;
@@ -1044,7 +725,6 @@
 
       if (elapsed >= duration) {
         if (currentIndex === slideData.length - 1) {
-          // 播完最後一頁時暫停並彈出重新播放確認 Modal
           isPlaying = false;
           playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
           showReplayModal(true);
@@ -1053,17 +733,10 @@
         currentIndex++;
         renderSlide(currentIndex);
       }
-
       requestAnimationFrame(updateProgress);
     }
 
-    function showReplayModal(show) {
-      if (show) {
-        replayModal.classList.add('visible');
-      } else {
-        replayModal.classList.remove('visible');
-      }
-    }
+    function showReplayModal(show) { replayModal.classList.toggle('visible', show); }
 
     replayYesBtn.addEventListener('click', () => {
       showReplayModal(false);
@@ -1075,14 +748,10 @@
       requestAnimationFrame(updateProgress);
     });
 
-    replayNoBtn.addEventListener('click', () => {
-      showReplayModal(false);
-    });
+    replayNoBtn.addEventListener('click', () => showReplayModal(false));
 
     playBtn.addEventListener('click', () => {
-      if (replayModal.classList.contains('visible')) {
-        showReplayModal(false);
-      }
+      if (replayModal.classList.contains('visible')) showReplayModal(false);
       isPlaying = !isPlaying;
       playBtn.innerHTML = isPlaying ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>';
       if (isPlaying) {

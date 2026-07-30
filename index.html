@@ -399,7 +399,7 @@
     </style>
 </head>
 <body>
-    <div class="version-tag">v1.28</div>
+    <div class="version-tag">v1.29</div>
 
     <section class="view-section">
         <header>
@@ -477,6 +477,7 @@
         let isShuffleActive = false;
         let shuffleHistory = [];
         let historyIndex = -1;
+        let isSwitching = false; // 切換狀態鎖，防重複衝突
 
         function stopAllOthers(activeId) {
             controllers.forEach((ctrl, id) => {
@@ -493,30 +494,31 @@
             targetText.innerText = grid.titleZh;
             prevBtn.disabled = (historyIndex <= 0);
 
+            isSwitching = true; // 鎖定切換
+
+            // 先停止其他正在播放的卡片
             stopAllOthers(grid.id);
+
             const targetCtrl = controllers.get(grid.id);
 
             if (targetCtrl) {
                 try {
-                    // 載入 URI
+                    // 載入 URI 並以穩定的方式觸發單次播放
                     targetCtrl.loadUri(`spotify:playlist:${grid.playlistId}`);
                     
-                    // 解決載入後停止問題：設定多階段觸發，確保 API 載入後必定播放
-                    const readyHandler = () => {
-                        try { targetCtrl.play(); } catch(e){}
-                        targetCtrl.removeListener('ready', readyHandler);
-                    };
-                    targetCtrl.addListener('ready', readyHandler);
+                    setTimeout(() => {
+                        try {
+                            targetCtrl.play();
+                        } catch (e) {}
+                        isSwitching = false; // 解除鎖定
+                    }, 400);
 
-                    // 多重保險：依序在 300ms, 600ms, 1000ms 嘗試觸發播放
-                    [300, 600, 1000].forEach(delay => {
-                        setTimeout(() => {
-                            try { targetCtrl.play(); } catch(e){}
-                        }, delay);
-                    });
                 } catch (e) {
                     try { targetCtrl.play(); } catch(err){}
+                    isSwitching = false;
                 }
+            } else {
+                isSwitching = false;
             }
         }
 
@@ -657,7 +659,8 @@
                     controllers.set(item.id, EmbedController);
 
                     EmbedController.addListener('playback_update', e => {
-                        if (e.data && !e.data.isPaused) {
+                        // 在非切換期間，點擊單一宮格播放時才觸發全域互斥，避開隨機切換中的狀態衝突
+                        if (!isSwitching && e.data && !e.data.isPaused) {
                             stopAllOthers(item.id);
                         }
                     });
